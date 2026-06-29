@@ -1,0 +1,371 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:form id="pagClienteForm">
+        <p:growl id="msgs" showDetail="true" life="5000"/>
+
+        <section class="module-hero customer-payment-hero">
+            <div>
+                <span class="module-tag">Área do cliente</span>
+                <h1>Meus Pagamentos</h1>
+                <p>
+                    Consulte pagamentos realizados, acompanhe o progresso financeiro
+                    das suas reservas e registre novos pagamentos quando houver valor pendente.
+                </p>
+            </div>
+        </section>
+
+        <section class="customer-payment-layout">
+            <div class="customer-payment-main">
+
+                <section class="customer-payment-selector-card">
+                    <div class="customer-section-header">
+                        <div>
+                            <span class="panel-subtitle">Reserva</span>
+                            <h2>Selecione uma reserva</h2>
+                        </div>
+                    </div>
+
+                    <div class="dialog-intro">
+                        <span>Consulta financeira</span>
+                        <p>
+                            Escolha uma reserva para visualizar o progresso do pagamento,
+                            os valores pagos e o histórico financeiro.
+                        </p>
+                    </div>
+
+                    <div class="form-field">
+                        <label class="form-label">Reserva</label>
+
+                        <p:selectOneMenu id="reservaClienteSelect"
+                                     value="#{pagamentoBean.reservaClienteSelecionadaId}"
+                                     styleClass="customer-payment-reservation-select"
+                                     panelStyleClass="customer-payment-reservation-panel"
+                                     appendTo="@(body)"
+                                     autoWidth="false"
+                                     style="width:100%; max-width:100%;">
+<f:selectItem itemLabel="Selecione uma reserva" itemValue=""/>
+                            <f:selectItems value="#{pagamentoBean.reservasCliente}"
+                                           var="r"
+                                           itemLabel="#{r.descricaoReservaMobile}"
+                                           itemValue="#{r.id}"/>
+
+                            <p:ajax event="change"
+                                    listener="#{pagamentoBean.onReservaClienteSelecionada}"
+                                    process="@this"
+                                    update="progressPanel tabelaPanel botoesPanel msgs"/>
+                        </p:selectOneMenu>
+                    </div>
+                </section>
+
+                <p:outputPanel id="progressPanel" layout="block">
+                    <h:panelGroup rendered="#{pagamentoBean.reservaClienteSelecionadaId != null}">
+                        <section class="customer-payment-progress-card">
+                            <div class="customer-section-header">
+                                <div>
+                                    <span class="panel-subtitle">Progresso</span>
+                                    <h2>Situação do pagamento</h2>
+                                </div>
+                            </div>
+
+                            <div class="customer-payment-values-grid">
+                                <div class="customer-payment-value-box">
+                                    <small>Valor total</small>
+                                    <strong>
+                                        R$
+                                        <h:outputText value="#{pagamentoBean.valorTotalReservaCliente}">
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputText>
+                                    </strong>
+                                </div>
+
+                                <div class="customer-payment-value-box">
+                                    <small>Total pago</small>
+                                    <strong>
+                                        R$
+                                        <h:outputText value="#{pagamentoBean.totalPagoCliente}">
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputText>
+                                    </strong>
+                                </div>
+
+                                <div class="customer-payment-value-box destaque">
+                                    <small>Valor restante</small>
+                                    <strong>
+                                        R$
+                                        <h:outputText value="#{pagamentoBean.restanteCliente}">
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputText>
+                                    </strong>
+                                </div>
+                            </div>
+
+                            <div class="customer-payment-progress">
+                                <div class="progress-label-row">
+                                    <span>Progresso do pagamento</span>
+                                    <strong>#{pagamentoBean.progressoCliente}%</strong>
+                                </div>
+
+                                <div class="progress-bar-track large-track">
+                                    <div class="progress-bar-fill"
+                                         style="width:#{pagamentoBean.progressoCliente}%; background-color:#{pagamentoBean.corProgressoCliente};">
+                                        <span class="progress-text">#{pagamentoBean.progressoCliente}%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </h:panelGroup>
+
+                    <h:panelGroup rendered="#{pagamentoBean.reservaClienteSelecionadaId == null}">
+                        <section class="customer-payment-empty-card">
+                            <div class="empty-icon"><i class="pi pi-car"></i></div>
+                            <h3>Nenhuma reserva selecionada</h3>
+                            <p>
+                                Selecione uma reserva acima para visualizar os pagamentos
+                                e acompanhar o andamento financeiro da sua locação.
+                            </p>
+                        </section>
+                    </h:panelGroup>
+                </p:outputPanel>
+
+                <p:outputPanel id="tabelaPanel" layout="block">
+                    <h:panelGroup rendered="#{pagamentoBean.reservaClienteSelecionadaId != null}">
+                        <section class="module-card customer-payment-history-card">
+                            <div class="module-card-header">
+                                <div>
+                                    <span class="panel-subtitle">Pagamentos</span>
+                                    <h2>Movimentações registradas</h2>
+                                </div>
+                            </div>
+
+                            <div class="table-responsive customer-payment-table-scroll">
+                                <p:dataTable id="tabelaPagCliente"
+             var="p"
+             value="#{pagamentoBean.pagamentosCliente}"
+             styleClass="dark-table customer-payment-table"
+             emptyMessage="Nenhuma movimentação registrada."
+             paginator="true"
+             rows="10"
+             paginatorPosition="bottom"
+             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+             rowStyleClass="dark-row">
+
+    <p:column headerText="ID" width="70">
+        <span class="reservation-code">
+            #<h:outputText value="#{p.id}"/>
+        </span>
+    </p:column>
+
+    <p:column headerText="Data" width="130">
+        <h:outputText value="#{p.dataPagamentoFormatada}"/>
+    </p:column>
+
+    <p:column headerText="Tipo" width="130">
+        <span class="status-badge #{p.multa ? 'status-cancelada' : 'status-pago'}">
+            <h:outputText value="#{p.tipo}"/>
+        </span>
+    </p:column>
+
+    <p:column headerText="Valor" width="150">
+        <span class="price-text">
+            R$
+            <h:outputText value="#{p.valor}">
+                <f:convertNumber pattern="#,##0.00"/>
+            </h:outputText>
+        </span>
+    </p:column>
+
+    <p:column headerText="Método / Descrição">
+        <h:outputText value="#{p.metodoPagamento}"/>
+    </p:column>
+</p:dataTable>
+                            </div>
+                        </section>
+                    </h:panelGroup>
+                </p:outputPanel>
+
+                <p:outputPanel id="botoesPanel" layout="block">
+                    <section class="customer-payment-actions">
+                        <p:commandButton value="Efetuar Pagamento"
+                                         onclick="PF('pagarDlg').show()"
+                                         type="button"
+                                         styleClass="btn-green"
+                                         rendered="#{pagamentoBean.reservaClienteSelecionadaId != null and pagamentoBean.progressoCliente lt 100}"/>
+
+                        <p:commandButton value="Histórico"
+                                         action="#{pagamentoBean.carregarHistoricoCliente}"
+                                         process="@this"
+                                         update="historicoPagarPanel msgs"
+                                         oncomplete="PF('historicoDlg').show()"
+                                         styleClass="btn-blue"/>
+                    </section>
+                </p:outputPanel>
+            </div>
+
+            <aside class="customer-payment-side-card">
+                <span class="customer-info-icon"><i class="pi pi-dollar"></i></span>
+                <h3>Controle financeiro</h3>
+                <p>
+                    Nesta área você acompanha os pagamentos vinculados às suas reservas.
+                    Caso exista valor pendente, utilize a opção de pagamento para registrar
+                    uma nova movimentação.
+                </p>
+
+                <div class="customer-payment-tips">
+                    <div>
+                        <span>1</span>
+                        <p>Selecione uma reserva.</p>
+                    </div>
+
+                    <div>
+                        <span>2</span>
+                        <p>Confira o valor restante.</p>
+                    </div>
+
+                    <div>
+                        <span>3</span>
+                        <p>Registre o pagamento.</p>
+                    </div>
+                </div>
+            </aside>
+        </section>
+
+        <p:dialog header="Efetuar Pagamento"
+                  widgetVar="pagarDlg"
+                  modal="true"
+                  styleClass="dialog-dark customer-payment-dialog"
+                  width="520"
+                  resizable="false"
+                  closable="true"
+                  fitViewport="true"
+                  responsive="true">
+
+            <p:outputPanel id="pagarPanel" layout="block">
+                <div class="customer-payment-dialog-body">
+                    <div class="dialog-intro">
+                        <span>Pagamento</span>
+                        <p>Informe o valor que deseja registrar e escolha o método de pagamento.</p>
+                    </div>
+
+                    <div class="customer-payment-value-box destaque">
+                        <small>Valor restante</small>
+                        <strong>
+                            R$
+                            <h:outputText value="#{pagamentoBean.restanteCliente}">
+                                <f:convertNumber pattern="#,##0.00"/>
+                            </h:outputText>
+                        </strong>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">Dados do pagamento</h3>
+
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label class="form-label">Valor (R$)</label>
+                                <p:inputText id="valorPagamentoCliente"
+                                             value="#{pagamentoBean.valorPagamentoCliente}"
+                                             styleClass="input-dark"
+                                             placeholder="Ex: 150,00"
+                                             required="true"
+                                             requiredMessage="Informe o valor do pagamento."/>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="form-label">Método de pagamento</label>
+                                <p:selectOneMenu id="metodoPagamentoCliente"
+                                                 value="#{pagamentoBean.metodoPagamentoCliente}"
+                                                 styleClass="customer-payment-method-select"
+                                                 panelStyleClass="customer-payment-method-panel"
+                                                 appendTo="@(body)"
+                                                 required="true"
+                                                 requiredMessage="Informe o método de pagamento.">
+                                    <f:selectItem itemLabel="Pix" itemValue="Pix"/>
+                                    <f:selectItem itemLabel="Cartão de Crédito" itemValue="Cartão de Crédito"/>
+                                    <f:selectItem itemLabel="Cartão de Débito" itemValue="Cartão de Débito"/>
+                                    <f:selectItem itemLabel="Dinheiro" itemValue="Dinheiro"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dialog-buttons customer-payment-dialog-footer">
+                    <p:commandButton value="Confirmar Pagamento"
+                                     action="#{pagamentoBean.efetuarPagamentoCliente}"
+                                     process="@this pagarPanel"
+                                     update=":pagClienteForm:msgs :pagClienteForm:progressPanel :pagClienteForm:tabelaPanel :pagClienteForm:botoesPanel :pagClienteForm:pagarPanel"
+                                     oncomplete="if(!args.validationFailed) PF('pagarDlg').hide()"
+                                     styleClass="btn-green"/>
+
+                    <p:commandButton value="Cancelar"
+                                     onclick="PF('pagarDlg').hide()"
+                                     type="button"
+                                     styleClass="btn-dark"/>
+                </div>
+            </p:outputPanel>
+        </p:dialog>
+
+        <p:dialog header="Histórico de Pagamentos"
+                  widgetVar="historicoDlg"
+                  modal="true"
+                  styleClass="dialog-dark customer-payment-dialog"
+                  width="520"
+                  resizable="false"
+                  closable="true"
+                  fitViewport="true"
+                  responsive="true">
+
+            <p:outputPanel id="historicoPagarPanel" layout="block">
+                <div class="customer-payment-dialog-body">
+                    <div class="dialog-intro">
+                        <span>Histórico geral</span>
+                        <p>Resumo dos pagamentos realizados pelo cliente.</p>
+                    </div>
+
+                    <div class="customer-payment-history-summary">
+                        <div>
+                            <small>Total de pagamentos</small>
+                            <strong>#{pagamentoBean.qtdPagamentosHistorico}</strong>
+                        </div>
+
+                        <div>
+                            <small>Valor total pago</small>
+                            <strong>
+                                R$
+                                <h:outputText value="#{pagamentoBean.totalPagoHistorico}">
+                                    <f:convertNumber pattern="#,##0.00"/>
+                                </h:outputText>
+                            </strong>
+                        </div>
+
+                        <div>
+                            <small>Média por pagamento</small>
+                            <strong>
+                                R$
+                                <h:outputText value="#{pagamentoBean.mediaPagamentosHistorico}">
+                                    <f:convertNumber pattern="#,##0.00"/>
+                                </h:outputText>
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dialog-buttons customer-payment-dialog-footer">
+                    <p:commandButton value="Fechar"
+                                     onclick="PF('historicoDlg').hide()"
+                                     type="button"
+                                     styleClass="btn-dark"/>
+                </div>
+            </p:outputPanel>
+        </p:dialog>
+
+        <div class="footer-area">
+            <p class="footer-text">&#169; 2026 - Balanço do Portuga | Meus Pagamentos</p>
+        </div>
+    </h:form>
+
+</ui:composition>

@@ -1,0 +1,300 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:form id="reservaForm">
+        <p:growl id="msgs" showDetail="true" life="5000"/>
+
+        <section class="module-hero reservation-hero">
+            <div>
+                <span class="module-tag">Gestão de reservas</span>
+                <h1>Reservas da Locadora</h1>
+                <p>
+                    Acompanhe as reservas realizadas, filtre por status, cliente ou período,
+                    conclua locações e cancele reservas quando necessário.
+                </p>
+            </div>
+        </section>
+
+        <section class="module-toolbar reservation-toolbar reservation-toolbar-clean">
+            <div class="toolbar-title">
+                <span>Busca rápida</span>
+                <strong>Filtrar reservas cadastradas</strong>
+            </div>
+
+            <div class="reservation-filter-grid">
+                <p:selectOneMenu id="filtroStatus"
+                 value="#{reservaBean.filtroStatus}"
+                 styleClass="reservation-status-select"
+                 panelStyleClass="reservation-status-panel"
+                 appendTo="@(body)">
+    <f:selectItem itemLabel="Todos os Status" itemValue=""/>
+    <f:selectItem itemLabel="Solicitada" itemValue="SOLICITADA"/>
+    <f:selectItem itemLabel="Em andamento" itemValue="EM_ANDAMENTO"/>
+    <f:selectItem itemLabel="Concluída" itemValue="CONCLUIDA"/>
+    <f:selectItem itemLabel="Cancelada" itemValue="CANCELADA"/>
+</p:selectOneMenu>
+
+                <p:inputText id="filtroCliente"
+                             value="#{reservaBean.filtroCliente}"
+                             placeholder="Buscar cliente..."
+                             styleClass="input-dark reservation-filter-input"/>
+
+                <p:datePicker id="filtroDataInicio"
+                              value="#{reservaBean.filtroDataInicio}"
+                              pattern="dd/MM/yyyy"
+                              mask="true"
+                              showIcon="true"
+                              placeholder="Data início"
+                              styleClass="date-picker-compact reservation-date-input"
+                              inputStyleClass="input-dark"/>
+
+                <p:datePicker id="filtroDataFim"
+                              value="#{reservaBean.filtroDataFim}"
+                              pattern="dd/MM/yyyy"
+                              mask="true"
+                              showIcon="true"
+                              placeholder="Data fim"
+                              styleClass="date-picker-compact reservation-date-input"
+                              inputStyleClass="input-dark"/>
+
+                <p:commandButton value="Filtrar"
+                                 action="#{reservaBean.filtrar}"
+                                 process="@this filtroStatus filtroCliente filtroDataInicio filtroDataFim"
+                                 update="tabelaReservas resumoBar msgs"
+                                 styleClass="btn-blue"/>
+
+                <p:commandButton value="Limpar"
+                                 action="#{reservaBean.limparFiltro}"
+                                 process="@this"
+                                 update="tabelaReservas resumoBar msgs @parent"
+                                 styleClass="btn-dark"/>
+            </div>
+        </section>
+
+        <p:outputPanel id="resumoBar">
+            <section class="reservation-summary-grid">
+                <div class="reservation-summary-card">
+                    <span class="summary-icon-mini blue">
+                        <i class="pi pi-calendar"></i>
+                    </span>
+
+                    <div>
+                        <small>Resumo das reservas</small>
+                        <strong>#{reservaBean.resumoStatus}</strong>
+                    </div>
+                </div>
+
+                <div class="reservation-summary-card">
+                    <span class="summary-icon-mini green">
+                        <i class="pi pi-dollar"></i>
+                    </span>
+
+                    <div>
+                        <small>Total faturado</small>
+                        <strong>
+                            R$
+                            <h:outputText value="#{reservaBean.totalFaturado}">
+                                <f:convertNumber pattern="#,##0.00"/>
+                            </h:outputText>
+                        </strong>
+                    </div>
+                </div>
+            </section>
+        </p:outputPanel>
+
+        <section class="module-card">
+            <div class="module-card-header">
+                <div>
+                    <span class="panel-subtitle">Listagem</span>
+                    <h2>Reservas cadastradas</h2>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <p:dataTable id="tabelaReservas"
+                             var="r"
+                             value="#{reservaBean.reservas}"
+                             styleClass="dark-table reservation-table"
+                             emptyMessage="Nenhuma reserva encontrada."
+                             paginator="true"
+                             rows="10"
+                             paginatorPosition="bottom"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                             rowKey="#{r.id}"
+                             selectionMode="single"
+                             selection="#{reservaBean.reservaSelecionada}"
+                             rowStyleClass="dark-row">
+
+                    <p:column headerText="ID" width="55">
+                        <h:outputText value="#{r.id}"/>
+                    </p:column>
+
+                    <p:column headerText="Cliente" width="220">
+                        <div class="reservation-person-cell">
+                            <span class="reservation-avatar">
+                                <h:outputText value="#{empty r.client.nome ? 'C' : r.client.nome.substring(0,1)}"/>
+                            </span>
+
+                            <div>
+                                <strong>
+                                    <h:outputText value="#{r.client.nome}"/>
+                                </strong>
+                                <small>Cliente da locadora</small>
+                            </div>
+                        </div>
+                    </p:column>
+
+                    <p:column headerText="Veículo" width="230">
+                        <div class="reservation-vehicle-cell">
+                            <h:panelGroup rendered="#{not empty r.vehicle.foto}">
+                                <img src="#{request.contextPath}/#{r.vehicle.foto}"
+                                     alt="Foto do veículo"
+                                     class="vehicle-photo-thumb"/>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{empty r.vehicle.foto}">
+                                <span class="reservation-car-icon">
+                                    <h:panelGroup rendered="#{r.vehicle.tipo eq 'MOTO'}">
+                                        <i class="pi pi-bolt"></i>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{r.vehicle.tipo ne 'MOTO'}">
+                                        <i class="pi pi-car"></i>
+                                    </h:panelGroup>
+                                </span>
+                            </h:panelGroup>
+
+                            <div>
+                                <strong>
+                                    <h:outputText value="#{r.vehicle.modelo}"/>
+                                </strong>
+                                <small>
+                                    <h:outputText value="#{r.vehicle.placa}"/>
+                                </small>
+                            </div>
+                        </div>
+                    </p:column>
+
+                    <p:column headerText="Início" width="115">
+    <h:outputText value="#{r.dataInicio}">
+        <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+    </h:outputText>
+</p:column>
+
+<p:column headerText="Fim" width="115">
+    <h:outputText value="#{r.dataFim}">
+        <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+    </h:outputText>
+</p:column>
+
+                    <p:column headerText="Total" width="130">
+                        <span class="price-text">
+                            R$
+                            <h:outputText value="#{r.total}">
+                                <f:convertNumber pattern="#,##0.00"/>
+                            </h:outputText>
+                        </span>
+                    </p:column>
+
+                    <p:column headerText="Status" width="125">
+                        <h:outputText value="#{r.statusDescricao}"
+              styleClass="status-badge status-#{r.statusClasse}"/>
+                    </p:column>
+
+                    <p:column headerText="Ações" width="180" styleClass="col-acoes">
+                        <div class="reservation-actions">
+                            <p:commandButton icon="pi pi-check"
+                                             styleClass="btn-icon-green"
+                                             title="Concluir reserva"
+                                             process="@this"
+                                             update="@none"
+                                             oncomplete="PF('confirmConcluirDlg').show()">
+                                <f:setPropertyActionListener value="#{r}"
+                                                             target="#{reservaBean.reservaSelecionada}"/>
+                            </p:commandButton>
+
+                            <p:commandButton icon="pi pi-times"
+                                             styleClass="btn-icon-delete"
+                                             title="Cancelar reserva"
+                                             process="@this"
+                                             update="@none"
+                                             oncomplete="PF('confirmCancelarDlg').show()">
+                                <f:setPropertyActionListener value="#{r}"
+                                                             target="#{reservaBean.reservaSelecionada}"/>
+                            </p:commandButton>
+                        </div>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </section>
+
+        <p:dialog id="confirmConcluirDlg"
+                  widgetVar="confirmConcluirDlg"
+                  header="Concluir Reserva"
+                  modal="true"
+                  styleClass="dialog-dark"
+                  closable="false"
+                  resizable="false"
+                  width="420">
+
+            <div class="confirm-box">
+                <div class="confirm-icon success">✓</div>
+
+                <h3>Concluir reserva?</h3>
+                <p>
+                    Ao confirmar, a reserva selecionada será marcada como concluída no sistema.
+                </p>
+
+                <div class="dialog-buttons center">
+                    <p:commandButton value="Sim, concluir"
+                                     action="#{reservaBean.concluirReserva}"
+                                     process="@this"
+                                     update=":reservaForm:tabelaReservas :reservaForm:msgs :reservaForm:resumoBar"
+                                     oncomplete="PF('confirmConcluirDlg').hide()"
+                                     styleClass="btn-green"/>
+
+                    <p:commandButton value="Cancelar"
+                                     type="button"
+                                     onclick="PF('confirmConcluirDlg').hide()"
+                                     styleClass="btn-dark"/>
+                </div>
+            </div>
+        </p:dialog>
+
+        <p:dialog id="confirmCancelarDlg"
+                  widgetVar="confirmCancelarDlg"
+                  header="Cancelar Reserva"
+                  modal="true"
+                  styleClass="dialog-dark"
+                  closable="false"
+                  resizable="false"
+                  width="420">
+
+            <div class="confirm-box">
+                <div class="confirm-icon danger">!</div>
+
+                <h3>Cancelar reserva?</h3>
+                <p>
+                    Esta ação cancelará a reserva selecionada e uma multa de 20% será aplicada.
+                </p>
+
+                <div class="dialog-buttons center">
+                    <p:commandButton value="Sim, cancelar"
+                                     action="#{reservaBean.cancelarReserva}"
+                                     process="@this"
+                                     update=":reservaForm:tabelaReservas :reservaForm:msgs :reservaForm:resumoBar"
+                                     oncomplete="PF('confirmCancelarDlg').hide()"
+                                     styleClass="btn-red"/>
+
+                    <p:commandButton value="Voltar"
+                                     type="button"
+                                     onclick="PF('confirmCancelarDlg').hide()"
+                                     styleClass="btn-dark"/>
+                </div>
+            </div>
+        </p:dialog>
+    </h:form>
+</ui:composition>

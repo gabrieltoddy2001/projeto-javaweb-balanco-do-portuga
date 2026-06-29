@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Balanço do Portuga - Área do Cliente</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+    
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<h:outputStylesheet library="primefaces" name="primeicons/primeicons.css"/>
+
+    <h:outputStylesheet name="css/style.css"/>
+</h:head>
+
+<h:body styleClass="body-with-sidebar">
+
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">BP</div>
+            <div class="logo-text">
+                <span>Balanço</span>
+                <small>do Portuga</small>
+            </div>
+        </div>
+
+        <h:form id="menuClienteForm">
+            <ul class="nav-links">
+                <li>
+                    <p:commandLink action="#{painelBean.abrirCliente('inicio')}"
+               process="@this"
+               update=":menuClienteForm :conteudoCliente"
+               styleClass="nav-inicio #{painelBean.menuClienteClasse('inicio')}">
+    <span>Início</span>
+</p:commandLink>
+                </li>
+
+                <li>
+                    <p:commandLink action="#{painelBean.abrirCliente('reservas')}"
+               process="@this"
+               update=":menuClienteForm :conteudoCliente"
+               styleClass="nav-reservas #{painelBean.menuClienteClasse('reservas')}">
+    <span>Minhas Reservas</span>
+</p:commandLink>
+                </li>
+
+                <li>
+                    <p:commandLink action="#{painelBean.abrirCliente('pagamentos')}"
+               process="@this"
+               update=":menuClienteForm :conteudoCliente"
+               styleClass="nav-pagamentos #{painelBean.menuClienteClasse('pagamentos')}">
+    <span>Meus Pagamentos</span>
+</p:commandLink>
+                </li>
+            </ul>
+        </h:form>
+
+        <div class="dark-mode-toggle">
+            <span class="toggle-label-text">&#x1F319; Dark Mode</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this)"/>
+                <span class="toggle-track"></span>
+            </label>
+        </div>
+
+        <h:form>
+            <p:commandButton value="Sair da Conta"
+                             action="#{loginBean.sair}"
+                             styleClass="btn-exit"
+                             ajax="false"/>
+        </h:form>
+    </nav>
+
+    <main class="main-content">
+        <p:outputPanel id="conteudoCliente" layout="block">
+            <ui:include src="#{painelBean.paginaCliente}"/>
+        </p:outputPanel>
+    </main>
+
+<script type="text/javascript">
+    //<![CDATA[
+    function toggleDarkMode(cb) {
+        document.body.classList.toggle('dark-mode', cb.checked);
+        localStorage.setItem('darkMode', cb.checked ? '1' : '0');
+    }
+
+    function aplicarDarkModeSalvo() {
+        var saved = localStorage.getItem('darkMode');
+
+        if (saved === '1') {
+            document.body.classList.add('dark-mode');
+
+            var cb = document.getElementById('darkModeToggle');
+            if (cb) {
+                cb.checked = true;
+            }
+        }
+    }
+
+    function recarregarIcones() {
+        if (window.FontAwesome && FontAwesome.dom && FontAwesome.dom.i2svg) {
+            FontAwesome.dom.i2svg();
+        }
+
+        document.querySelectorAll('.pi, .fa, .fas, .far, .fab, .fa-solid, .fa-regular, .fa-brands').forEach(function (icon) {
+            icon.style.display = '';
+            icon.style.visibility = 'visible';
+            icon.style.opacity = '1';
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        aplicarDarkModeSalvo();
+        recarregarIcones();
+    });
+
+    if (window.PrimeFaces && PrimeFaces.jQuery) {
+        PrimeFaces.jQuery(document).on('pfAjaxComplete', function () {
+            aplicarDarkModeSalvo();
+
+            setTimeout(function () {
+                recarregarIcones();
+            }, 50);
+        });
+    }
+    //]]>
+</script>
+
+</h:body>
+</html>

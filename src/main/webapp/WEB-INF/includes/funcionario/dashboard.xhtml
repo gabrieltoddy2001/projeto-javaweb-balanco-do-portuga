@@ -1,0 +1,304 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <section class="dash-hero">
+        <div>
+            <span class="module-tag">Painel administrativo</span>
+            <h1>Dashboard da Locadora</h1>
+            <p>
+                Visão geral da operação, reservas, pagamentos e desempenho financeiro
+                da franquia Balanço do Portuga.
+            </p>
+        </div>
+
+        <div class="dash-company-card">
+            <span>Franquia</span>
+            <strong>Balanço do Portuga</strong>
+            <small>Aluguel de veículos • Salvador - BA</small>
+        </div>
+    </section>
+
+    <section class="dash-kpi-grid">
+        <div class="dash-kpi-card">
+            <div class="dash-kpi-icon blue">
+    <i class="pi pi-calendar"></i>
+</div>
+            <div>
+                <span>Total de Reservas</span>
+                <strong>#{dashboardFuncionarioBean.totalReservas}</strong>
+                <small>Reservas registradas no sistema</small>
+            </div>
+        </div>
+
+        <div class="dash-kpi-card">
+            <div class="dash-kpi-icon green">
+    <i class="pi pi-check-circle"></i>
+</div>
+            <div>
+                <span>Reservas Ativas</span>
+                <strong>#{dashboardFuncionarioBean.reservasAtivas}</strong>
+                <small>Reservas em andamento</small>
+            </div>
+        </div>
+
+        <div class="dash-kpi-card">
+            <div class="dash-kpi-icon orange">
+    <i class="pi pi-users"></i>
+</div>
+            <div>
+                <span>Clientes Atendidos</span>
+                <strong>#{dashboardFuncionarioBean.clientesAtendidos}</strong>
+                <small>Clientes com movimentação</small>
+            </div>
+        </div>
+
+        <div class="dash-kpi-card">
+            <div class="dash-kpi-icon purple">
+    <i class="pi pi-car"></i>
+</div>
+            <div>
+                <span>Veículos Movimentados</span>
+                <strong>#{dashboardFuncionarioBean.veiculosMovimentados}</strong>
+                <small>Veículos usados em reservas</small>
+            </div>
+        </div>
+    </section>
+
+    <section class="dash-content-grid">
+        <div class="dash-panel dash-finance-panel">
+            <div class="dash-panel-header">
+                <div>
+                    <span class="panel-subtitle">Financeiro</span>
+                    <h2>Resumo de Pagamentos</h2>
+                </div>
+            </div>
+
+            <div class="dash-money-grid">
+                <div>
+                    <small>Receita total prevista</small>
+                    <strong>
+                        R$
+                        <h:outputText value="#{dashboardFuncionarioBean.receitaTotal}">
+                            <f:convertNumber pattern="#,##0.00"/>
+                        </h:outputText>
+                    </strong>
+                </div>
+
+                <div>
+                    <small>Receita recebida</small>
+                    <strong class="success-text">
+                        R$
+                        <h:outputText value="#{dashboardFuncionarioBean.receitaRecebida}">
+                            <f:convertNumber pattern="#,##0.00"/>
+                        </h:outputText>
+                    </strong>
+                </div>
+
+                <div>
+                    <small>Valor em aberto</small>
+                    <strong class="warning-text">
+                        R$
+                        <h:outputText value="#{dashboardFuncionarioBean.receitaPendente}">
+                            <f:convertNumber pattern="#,##0.00"/>
+                        </h:outputText>
+                    </strong>
+                </div>
+
+                <div>
+                    <small>Ticket médio</small>
+                    <strong>
+                        R$
+                        <h:outputText value="#{dashboardFuncionarioBean.ticketMedio}">
+                            <f:convertNumber pattern="#,##0.00"/>
+                        </h:outputText>
+                    </strong>
+                </div>
+            </div>
+
+            <div class="dash-progress-block">
+                <div class="progress-label-row">
+                    <span>Recebido sobre o previsto</span>
+                    <strong>#{dashboardFuncionarioBean.percentualRecebido}%</strong>
+                </div>
+
+                <div class="progress-bar-track large-track">
+                    <div class="progress-bar-fill dash-progress-green"
+                         style="width:#{dashboardFuncionarioBean.percentualRecebido}%;">
+                        <span class="progress-text">#{dashboardFuncionarioBean.percentualRecebido}%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-panel">
+            <div class="dash-panel-header">
+                <div>
+                    <span class="panel-subtitle">Status</span>
+                    <h2>Situação das Reservas</h2>
+                </div>
+            </div>
+
+            <div class="dash-status-list">
+                <div class="dash-status-item">
+                    <div>
+                        <strong>Ativas</strong>
+                        <small>#{dashboardFuncionarioBean.reservasAtivas} reservas</small>
+                    </div>
+                    <span>#{dashboardFuncionarioBean.percentualAtivas}%</span>
+                </div>
+
+                <div class="dash-mini-bar">
+                    <div style="width:#{dashboardFuncionarioBean.percentualAtivas}%;" class="bar-blue"></div>
+                </div>
+
+                <div class="dash-status-item">
+                    <div>
+                        <strong>Concluídas</strong>
+                        <small>#{dashboardFuncionarioBean.reservasConcluidas} reservas</small>
+                    </div>
+                    <span>#{dashboardFuncionarioBean.percentualConcluidas}%</span>
+                </div>
+
+                <div class="dash-mini-bar">
+                    <div style="width:#{dashboardFuncionarioBean.percentualConcluidas}%;" class="bar-green"></div>
+                </div>
+
+                <div class="dash-status-item">
+                    <div>
+                        <strong>Canceladas</strong>
+                        <small>#{dashboardFuncionarioBean.reservasCanceladas} reservas</small>
+                    </div>
+                    <span>#{dashboardFuncionarioBean.percentualCanceladas}%</span>
+                </div>
+
+                <div class="dash-mini-bar">
+                    <div style="width:#{dashboardFuncionarioBean.percentualCanceladas}%;" class="bar-red"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="dash-content-grid">
+        <div class="dash-panel">
+            <div class="dash-panel-header">
+                <div>
+                    <span class="panel-subtitle">Últimas movimentações</span>
+                    <h2>Reservas Recentes</h2>
+                </div>
+            </div>
+
+            <div class="dash-reservation-list">
+    <ui:repeat value="#{dashboardFuncionarioBean.ultimasReservas}" var="r">
+        <div class="dash-reservation-item">
+            <div class="dash-reservation-icon">
+                #<h:outputText value="#{r.id}"/>
+            </div>
+
+            <div class="dash-reservation-info">
+                <strong>
+                    <h:outputText value="#{empty r.client.nome ? 'Cliente não informado' : r.client.nome}"/>
+                </strong>
+
+                <small>
+                    <h:outputText value="#{empty r.vehicle.modelo ? 'Veículo não informado' : r.vehicle.modelo}"/>
+                    •
+                    <h:outputText value="#{r.dataInicioFormatada}"/>
+                    até
+                    <h:outputText value="#{r.dataFimFormatada}"/>
+                </small>
+            </div>
+
+            <span class="status-badge status-#{r.statusClasse}">
+    <h:outputText value="#{r.statusDescricao}"/>
+</span>
+        </div>
+    </ui:repeat>
+</div>
+        </div>
+
+        <div class="dash-panel">
+            <div class="dash-panel-header">
+                <div>
+                    <span class="panel-subtitle">Ações rápidas</span>
+                    <h2>Operações</h2>
+                </div>
+            </div>
+
+            <h:form id="dashboardActionsForm">
+                <div class="dash-action-grid">
+                    <p:commandLink action="#{painelBean.abrirFuncionario('clientes')}"
+                                   process="@this"
+                                   update=":menuFuncionarioForm :conteudoFuncionario"
+                                   styleClass="dash-action-card">
+                        <span><i class="pi pi-users"></i></span>
+                        <strong>Clientes</strong>
+                        <small>Gerenciar cadastros</small>
+                    </p:commandLink>
+
+                    <p:commandLink action="#{painelBean.abrirFuncionario('veiculos')}"
+                                   process="@this"
+                                   update=":menuFuncionarioForm :conteudoFuncionario"
+                                   styleClass="dash-action-card">
+                        <span><i class="pi pi-car"></i>
+</span>
+                        <strong>Veículos</strong>
+                        <small>Controlar frota</small>
+                    </p:commandLink>
+
+                    <p:commandLink action="#{painelBean.abrirFuncionario('reservas')}"
+                                   process="@this"
+                                   update=":menuFuncionarioForm :conteudoFuncionario"
+                                   styleClass="dash-action-card">
+                        <span><i class="pi pi-calendar"></i>
+</span>
+                        <strong>Reservas</strong>
+                        <small>Acompanhar locações</small>
+                    </p:commandLink>
+
+                    <p:commandLink action="#{painelBean.abrirFuncionario('pagamentos')}"
+                                   process="@this"
+                                   update=":menuFuncionarioForm :conteudoFuncionario"
+                                   styleClass="dash-action-card">
+                        <span><i class="pi pi-credit-card"></i></span>
+                        <strong>Pagamentos</strong>
+                        <small>Resumo financeiro</small>
+                    </p:commandLink>
+                </div>
+            </h:form>
+        </div>
+    </section>
+
+    <section class="dash-kpi-grid dash-payment-status">
+        <div class="dash-small-card">
+            <span class="status-badge status-pendente">PENDENTE</span>
+            <strong>#{dashboardFuncionarioBean.pagamentosPendentes}</strong>
+            <small>Reservas sem pagamento</small>
+        </div>
+
+        <div class="dash-small-card">
+            <span class="status-badge status-parcial">PARCIAL</span>
+            <strong>#{dashboardFuncionarioBean.pagamentosParciais}</strong>
+            <small>Reservas com pagamento parcial</small>
+        </div>
+
+        <div class="dash-small-card">
+            <span class="status-badge status-pago">PAGO</span>
+            <strong>#{dashboardFuncionarioBean.pagamentosPagos}</strong>
+            <small>Reservas quitadas</small>
+        </div>
+
+        <div class="dash-small-card">
+            <span class="status-badge status-ativa">OPERAÇÃO</span>
+            <strong>#{dashboardFuncionarioBean.totalReservas}</strong>
+            <small>Total de reservas analisadas</small>
+        </div>
+    </section>
+
+    <div class="footer-area">
+        <p class="footer-text">&#169; 2026 - Balanço do Portuga | Dashboard Administrativo</p>
+    </div>
+
+</ui:composition>

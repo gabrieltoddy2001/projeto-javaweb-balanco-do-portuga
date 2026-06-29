@@ -1,0 +1,441 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:form id="veiculoListForm">
+        <p:growl id="msgs" showDetail="true" life="5000"/>
+
+        <section class="module-hero vehicle-hero">
+            <div>
+                <span class="module-tag">Gestão da frota</span>
+                <h1>Veículos da Locadora</h1>
+                <p>
+                    Cadastre carros e motos, vincule fotos à frota e organize os veículos
+                    disponíveis para locação.
+                </p>
+            </div>
+        </section>
+
+        <section class="module-toolbar">
+            <div class="toolbar-title">
+                <span>Busca rápida</span>
+                <strong>Filtrar veículos cadastrados</strong>
+            </div>
+
+            <div class="toolbar-actions">
+                <p:inputText id="filtroVeiculo"
+                             value="#{veiculoBean.filtro}"
+                             placeholder="Buscar por modelo, placa ou tipo..."
+                             styleClass="input-dark filter-input"/>
+
+                <p:selectOneMenu id="filtroMarca"
+                                 value="#{veiculoBean.filtroMarca}"
+                                 styleClass="vehicle-brand-select"
+                                 panelStyleClass="vehicle-brand-panel"
+                                 appendTo="@(body)">
+                    <f:selectItem itemLabel="Todas as Marcas" itemValue=""/>
+                    <f:selectItems value="#{veiculoBean.marcas}"/>
+                </p:selectOneMenu>
+
+                <p:commandButton value="Filtrar"
+                                 action="#{veiculoBean.filtrar}"
+                                 process="@this filtroVeiculo filtroMarca"
+                                 update="tabelaVeiculos msgs"
+                                 styleClass="btn-blue"/>
+
+                <p:commandButton value="Limpar"
+                                 action="#{veiculoBean.limparFiltro}"
+                                 process="@this"
+                                 update="tabelaVeiculos msgs @parent"
+                                 styleClass="btn-dark"/>
+            </div>
+        </section>
+
+        <section class="module-card">
+            <div class="module-card-header">
+                <div>
+                    <span class="panel-subtitle">Listagem</span>
+                    <h2>Veículos cadastrados</h2>
+                </div>
+
+                <p:commandButton value="Adicionar"
+                                 action="#{veiculoBean.prepararNovo}"
+                                 process="@this"
+                                 update=":novoVeiculoForm:novoPanel :veiculoListForm:msgs"
+                                 oncomplete="PF('novoDlg').show()"
+                                 styleClass="btn-green btn-sm"/>
+            </div>
+
+            <div class="table-responsive">
+                <p:dataTable id="tabelaVeiculos"
+                             var="v"
+                             value="#{veiculoBean.veiculosFiltrados}"
+                             styleClass="dark-table vehicle-table"
+                             emptyMessage="Nenhum veículo encontrado."
+                             paginator="true"
+                             rows="10"
+                             paginatorPosition="bottom"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                             rowKey="#{v.id}"
+                             selectionMode="single"
+                             selection="#{veiculoBean.veiculoSelecionado}"
+                             rowStyleClass="dark-row">
+
+                    <p:column headerText="ID" width="55">
+                        <h:outputText value="#{v.id}"/>
+                    </p:column>
+
+                    <p:column headerText="Veículo" width="300">
+                        <div class="vehicle-name-cell">
+                            <h:panelGroup rendered="#{not empty v.foto}">
+                                <img src="#{request.contextPath}/#{v.foto}"
+                                     alt="Foto do veículo"
+                                     class="vehicle-photo-thumb"/>
+                            </h:panelGroup>
+
+                            <h:panelGroup rendered="#{empty v.foto}">
+                                <span class="vehicle-avatar">
+                                    <h:panelGroup rendered="#{v.tipo eq 'MOTO'}">
+                                        <i class="pi pi-bolt"></i>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{v.tipo ne 'MOTO'}">
+                                        <i class="pi pi-car"></i>
+                                    </h:panelGroup>
+                                </span>
+                            </h:panelGroup>
+
+                            <div>
+                                <strong>
+                                    <h:outputText value="#{v.modelo}"/>
+                                </strong>
+                                <small>
+                                    <h:outputText value="#{v.marca}"/>
+                                </small>
+                            </div>
+                        </div>
+                    </p:column>
+
+                    <p:column headerText="Tipo" width="110">
+                        <span class="vehicle-type-badge #{v.tipo eq 'MOTO' ? 'type-moto' : 'type-carro'}">
+                            <h:outputText value="#{v.tipo eq 'MOTO' ? 'Moto' : 'Carro'}"/>
+                        </span>
+                    </p:column>
+
+                    <p:column headerText="Placa" width="130">
+                        <span class="plate-badge">
+                            <h:outputText value="#{v.placa}"/>
+                        </span>
+                    </p:column>
+
+                    <p:column headerText="Ano" width="90">
+                        <h:outputText value="#{v.ano}"/>
+                    </p:column>
+
+                    <p:column headerText="Diária" width="140">
+                        <span class="price-text">
+                            R$
+                            <h:outputText value="#{v.diaria}">
+                                <f:convertNumber pattern="#,##0.00"/>
+                            </h:outputText>
+                        </span>
+                    </p:column>
+
+                    <p:column headerText="Ações" width="170" styleClass="col-acoes">
+                        <div class="vehicle-actions">
+                            <p:commandButton icon="pi pi-pencil"
+                                             styleClass="btn-icon-edit"
+                                             title="Editar veículo"
+                                             action="#{veiculoBean.prepararEdicao}"
+                                             process="@this"
+                                             oncomplete="if(!args.validationFailed) PF('editDlg').show()"
+                                             update=":editVeiculoForm:editPanel :veiculoListForm:msgs">
+                                <f:setPropertyActionListener value="#{v}"
+                                                             target="#{veiculoBean.veiculoSelecionado}"/>
+                            </p:commandButton>
+
+                            <p:commandButton icon="pi pi-trash"
+                                             styleClass="btn-icon-delete"
+                                             title="Excluir veículo"
+                                             process="@this"
+                                             update="@none"
+                                             oncomplete="PF('confirmExcluirDlg').show()">
+                                <f:setPropertyActionListener value="#{v}"
+                                                             target="#{veiculoBean.veiculoSelecionado}"/>
+                            </p:commandButton>
+                        </div>
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </section>
+
+        <p:dialog id="confirmExcluirDlg"
+                  widgetVar="confirmExcluirDlg"
+                  header="Confirmar exclusão"
+                  modal="true"
+                  styleClass="dialog-dark"
+                  closable="false"
+                  resizable="false"
+                  width="420">
+
+            <div class="confirm-box">
+                <div class="confirm-icon danger">!</div>
+
+                <h3>Excluir veículo?</h3>
+                <p>
+                    Esta ação removerá o veículo selecionado do sistema.
+                    Confirme apenas se tiver certeza.
+                </p>
+
+                <div class="dialog-buttons center">
+                    <p:commandButton value="Sim, excluir"
+                                     action="#{veiculoBean.excluir}"
+                                     process="@this"
+                                     update=":veiculoListForm:tabelaVeiculos :veiculoListForm:msgs"
+                                     oncomplete="PF('confirmExcluirDlg').hide()"
+                                     styleClass="btn-red"/>
+
+                    <p:commandButton value="Cancelar"
+                                     type="button"
+                                     onclick="PF('confirmExcluirDlg').hide()"
+                                     styleClass="btn-dark"/>
+                </div>
+            </div>
+        </p:dialog>
+    </h:form>
+
+    <h:form id="novoVeiculoForm" enctype="multipart/form-data">
+        <p:dialog header="Novo Veículo"
+                  widgetVar="novoDlg"
+                  modal="true"
+                  styleClass="dialog-dark vehicle-dialog"
+                  width="620"
+                  resizable="false"
+                  closable="true"
+                  fitViewport="true"
+                  responsive="true">
+
+            <p:outputPanel id="novoPanel">
+                <div class="vehicle-dialog-body">
+                    <div class="dialog-intro">
+                        <span>Cadastro</span>
+                        <p>Preencha os dados principais do veículo e vincule uma foto da frota.</p>
+                    </div>
+
+                    <div class="form-section">
+                        <h3 class="section-title">Dados do veículo</h3>
+
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label class="form-label">Tipo de veículo</label>
+                                <p:selectOneMenu value="#{veiculoBean.novoVeiculo.tipo}"
+                                                 styleClass="vehicle-brand-select"
+                                                 panelStyleClass="vehicle-brand-panel"
+                                                 required="true"
+                                                 requiredMessage="Informe o tipo do veículo.">
+                                    <f:selectItem itemLabel="Carro" itemValue="CARRO"/>
+                                    <f:selectItem itemLabel="Moto" itemValue="MOTO"/>
+                                </p:selectOneMenu>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="form-label">Modelo</label>
+                                <p:inputText value="#{veiculoBean.novoVeiculo.modelo}"
+                                             styleClass="input-dark"
+                                             maxlength="100"
+                                             placeholder="Ex: Onix, Argo, Corolla, Titan"
+                                             required="true"
+                                             requiredMessage="Informe o modelo do veículo."/>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="form-label">Marca</label>
+                                <p:inputText value="#{veiculoBean.novoVeiculo.marca}"
+                                             styleClass="input-dark"
+                                             maxlength="50"
+                                             placeholder="Ex: Chevrolet, Fiat, Toyota, Honda"
+                                             required="true"
+                                             requiredMessage="Informe a marca do veículo."/>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="form-label">Placa</label>
+                                <p:inputText value="#{veiculoBean.novoVeiculo.placa}"
+                                             styleClass="input-dark"
+                                             maxlength="10"
+                                             placeholder="ABC-1234"
+                                             required="true"
+                                             requiredMessage="Informe a placa do veículo."/>
+                            </div>
+
+                            <div class="form-row-2col">
+                                <div class="form-field">
+                                    <label class="form-label">Ano</label>
+                                    <p:inputText value="#{veiculoBean.novoVeiculo.ano}"
+                                                 styleClass="input-dark"
+                                                 maxlength="4"
+                                                 placeholder="2024"
+                                                 required="true"
+                                                 requiredMessage="Informe o ano do veículo."/>
+                                </div>
+
+                                <div class="form-field">
+                                    <label class="form-label">Diária (R$)</label>
+                                    <p:inputText value="#{veiculoBean.novoVeiculo.diaria}"
+                                                 styleClass="input-dark"
+                                                 placeholder="150.00"
+                                                 required="true"
+                                                 requiredMessage="Informe o valor da diária."/>
+                                </div>
+                            </div>
+
+                            <div class="form-field">
+                                <label class="form-label">Foto do veículo</label>
+                                <h:inputFile value="#{veiculoBean.fotoUpload}"
+                                             styleClass="input-dark"/>
+                                <small class="field-help">
+                                    Formatos aceitos: JPG, PNG ou WEBP.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dialog-buttons vehicle-dialog-footer">
+                    <p:commandButton value="Salvar Veículo"
+                                     action="#{veiculoBean.salvarNovo}"
+                                     ajax="false"
+                                     styleClass="btn-green"/>
+
+                    <p:commandButton value="Cancelar"
+                                     onclick="PF('novoDlg').hide()"
+                                     type="button"
+                                     styleClass="btn-dark"/>
+                </div>
+            </p:outputPanel>
+        </p:dialog>
+    </h:form>
+
+    <h:form id="editVeiculoForm" enctype="multipart/form-data">
+        <p:dialog header="Editar Veículo"
+                  widgetVar="editDlg"
+                  modal="true"
+                  styleClass="dialog-dark vehicle-dialog"
+                  width="620"
+                  resizable="false"
+                  closable="true"
+                  fitViewport="true"
+                  responsive="true">
+
+            <p:outputPanel id="editPanel">
+                <p:outputPanel rendered="#{veiculoBean.veiculoSelecionado != null}">
+                    <div class="vehicle-dialog-body">
+                        <div class="dialog-intro">
+                            <span>Edição</span>
+                            <p>Atualize os dados do veículo selecionado. Envie uma nova foto apenas se desejar substituir a atual.</p>
+                        </div>
+
+                        <div class="form-section">
+                            <h3 class="section-title">Dados do veículo</h3>
+
+                            <div class="form-grid">
+                                <h:panelGroup rendered="#{not empty veiculoBean.veiculoSelecionado.foto}">
+                                    <div class="vehicle-current-photo-box">
+                                        <img src="#{request.contextPath}/#{veiculoBean.veiculoSelecionado.foto}"
+                                             alt="Foto atual do veículo"
+                                             class="vehicle-current-photo"/>
+                                        <div>
+                                            <strong>Foto atual</strong>
+                                            <small>Envie uma nova imagem apenas se quiser substituir.</small>
+                                        </div>
+                                    </div>
+                                </h:panelGroup>
+
+                                <div class="form-field">
+                                    <label class="form-label">Tipo de veículo</label>
+                                    <p:selectOneMenu value="#{veiculoBean.veiculoSelecionado.tipo}"
+                                                     styleClass="vehicle-brand-select"
+                                                     panelStyleClass="vehicle-brand-panel"
+                                                     required="true"
+                                                     requiredMessage="Informe o tipo do veículo.">
+                                        <f:selectItem itemLabel="Carro" itemValue="CARRO"/>
+                                        <f:selectItem itemLabel="Moto" itemValue="MOTO"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <div class="form-field">
+                                    <label class="form-label">Modelo</label>
+                                    <p:inputText value="#{veiculoBean.veiculoSelecionado.modelo}"
+                                                 styleClass="input-dark"
+                                                 maxlength="100"
+                                                 required="true"
+                                                 requiredMessage="Informe o modelo do veículo."/>
+                                </div>
+
+                                <div class="form-field">
+                                    <label class="form-label">Marca</label>
+                                    <p:inputText value="#{veiculoBean.veiculoSelecionado.marca}"
+                                                 styleClass="input-dark"
+                                                 maxlength="50"
+                                                 required="true"
+                                                 requiredMessage="Informe a marca do veículo."/>
+                                </div>
+
+                                <div class="form-field">
+                                    <label class="form-label">Placa</label>
+                                    <p:inputText value="#{veiculoBean.veiculoSelecionado.placa}"
+                                                 styleClass="input-dark"
+                                                 maxlength="10"
+                                                 required="true"
+                                                 requiredMessage="Informe a placa do veículo."/>
+                                </div>
+
+                                <div class="form-row-2col">
+                                    <div class="form-field">
+                                        <label class="form-label">Ano</label>
+                                        <p:inputText value="#{veiculoBean.veiculoSelecionado.ano}"
+                                                     styleClass="input-dark"
+                                                     maxlength="4"
+                                                     required="true"
+                                                     requiredMessage="Informe o ano do veículo."/>
+                                    </div>
+
+                                    <div class="form-field">
+                                        <label class="form-label">Diária (R$)</label>
+                                        <p:inputText value="#{veiculoBean.veiculoSelecionado.diaria}"
+                                                     styleClass="input-dark"
+                                                     required="true"
+                                                     requiredMessage="Informe o valor da diária."/>
+                                    </div>
+                                </div>
+
+                                <div class="form-field">
+                                    <label class="form-label">Nova foto do veículo</label>
+                                    <h:inputFile value="#{veiculoBean.fotoUploadEdicao}"
+                                                 styleClass="input-dark"/>
+                                    <small class="field-help">
+                                        Deixe vazio para manter a foto atual.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dialog-buttons vehicle-dialog-footer">
+                        <p:commandButton value="Salvar Alterações"
+                                         action="#{veiculoBean.salvarEdicao}"
+                                         ajax="false"
+                                         styleClass="btn-green"/>
+
+                        <p:commandButton value="Cancelar"
+                                         onclick="PF('editDlg').hide()"
+                                         type="button"
+                                         styleClass="btn-dark"/>
+                    </div>
+                </p:outputPanel>
+            </p:outputPanel>
+        </p:dialog>
+    </h:form>
+</ui:composition>
