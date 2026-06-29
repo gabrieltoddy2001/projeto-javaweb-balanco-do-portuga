@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
+      xmlns:p="http://primefaces.org/ui">
+
+<f:metadata>
+    <f:viewParam name="acesso" value="#{loginBean.acesso}" />
+</f:metadata>
+
+<h:head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Balanço do Portuga - Login</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin"/>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+
+    <h:outputStylesheet name="css/style.css"/>
+</h:head>
+
+<h:body styleClass="body-login">
+    <div class="login-container">
+
+        <div class="login-header">
+            <div class="logo-icon">BP</div>
+
+            <span class="access-pill">
+                #{loginBean.acesso eq 'cliente' ? 'Área do Cliente' : loginBean.acesso eq 'funcionario' ? 'Área do Funcionário' : 'Acesso ao Sistema'}
+            </span>
+
+            <h1 class="login-title">#{loginBean.tituloAcesso}</h1>
+
+            <p class="login-subtitle">
+                #{loginBean.descricaoAcesso}
+            </p>
+        </div>
+
+        <h:form id="loginForm">
+            <p:growl id="msgs" showDetail="false" life="4000"/>
+
+            <div class="form-group login-field">
+                <label class="form-label">
+                    #{loginBean.acesso eq 'cliente' ? 'E-mail do cliente:' : loginBean.acesso eq 'funcionario' ? 'Usuário do funcionário:' : 'Usuário ou E-mail:'}
+                </label>
+
+                <p:inputText id="login"
+                             value="#{loginBean.login}"
+                             styleClass="input-dark"
+                             placeholder="#{loginBean.acesso eq 'cliente' ? 'Digite seu e-mail' : loginBean.acesso eq 'funcionario' ? 'Digite seu usuário' : 'Digite seu e-mail ou usuário'}"/>
+            </div>
+
+            <div class="form-group login-field">
+                <label class="form-label">
+                    #{loginBean.acesso eq 'cliente' ? 'CPF:' : loginBean.acesso eq 'funcionario' ? 'Senha:' : 'Senha:'}
+                </label>
+
+                <p:password id="senha"
+                            value="#{loginBean.senha}"
+                            styleClass="input-dark"
+                            placeholder="#{loginBean.acesso eq 'cliente' ? 'Digite seu CPF' : loginBean.acesso eq 'funcionario' ? 'Digite sua senha' : 'Digite sua senha'}"
+                            feedback="false"/>
+            </div>
+
+
+            <div class="login-buttons">
+                <p:commandButton value="Entrar"
+                                 action="#{loginBean.entrar}"
+                                 styleClass="btn-blue"
+                                 update="msgs"
+                                 ajax="false"/>
+
+                <p:button value="Voltar"
+                          outcome="index"
+                          styleClass="btn-outline-red"/>
+            </div>
+        </h:form>
+    </div>
+</h:body>
+</html>

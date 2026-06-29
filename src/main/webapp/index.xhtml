@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html">
+<h:head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Balanço do Portuga | Sistema de Aluguel de Veículos</title>
+    <h:outputStylesheet library="css" name="landing-onepage.css" />
+</h:head>
+
+<h:body>
+    <header class="topbar">
+        <div class="container nav-wrap">
+            <a href="#inicio" class="brand">
+                <span class="brand-badge">BP</span>
+                <span class="brand-text">
+                    <strong>Balanço do Portuga</strong>
+                    <small>Aluguel de Veículos</small>
+                </span>
+            </a>
+
+            <nav class="nav">
+                <a href="#inicio">Início</a>
+                <a href="#sobre">Sobre</a>
+                <a href="#sistema">Sistema</a>
+                <a href="#tecnologias">Tecnologias</a>
+                <a href="#equipe">Equipe</a>
+                <a href="#acesso">Área Restrita</a>
+                <a href="#contato">Contato</a>
+            </nav>
+
+            
+        </div>
+    </header>
+
+    <main>
+        <section id="inicio" class="hero">
+            <div class="container hero-grid">
+                <div class="hero-content">
+                    <span class="eyebrow">Projeto acadêmico • Aplicação web</span>
+
+                    <h1>Sistema web para gestão de aluguel de veículos</h1>
+
+                    <p class="hero-text">
+                        O <strong>Balanço do Portuga</strong> é um projeto acadêmico desenvolvido
+                        para simular o funcionamento de uma locadora de veículos, permitindo organizar
+                        clientes, frota, reservas e pagamentos em uma única aplicação web.
+                    </p>
+
+                    <div class="hero-actions">
+                        <a href="#acesso" class="btn btn-primary">Acessar Área Restrita</a>
+                        <a href="#sistema" class="btn btn-outline">Conhecer o Sistema</a>
+                    </div>
+
+                    <div class="hero-stats">
+                        <div class="stat-card">
+                            <strong>Acadêmico</strong>
+                            <span>Projeto desenvolvido para faculdade</span>
+                        </div>
+                        <div class="stat-card">
+                            <strong>Web</strong>
+                            <span>Aplicação com acesso restrito</span>
+                        </div>
+                        <div class="stat-card">
+                            <strong>Locadora</strong>
+                            <span>Controle de veículos e reservas</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-panel">
+                    <div class="hero-panel-card">
+                        <span class="panel-tag">Objetivo do sistema</span>
+                        <h3>Organizar processos de uma locadora</h3>
+
+                        <ul class="panel-list">
+                            <li>Centralizar os cadastros principais</li>
+                            <li>Controlar reservas realizadas</li>
+                            <li>Acompanhar pagamentos</li>
+                            <li>Diferenciar acesso de cliente e funcionário</li>
+                            <li>Aplicar conceitos aprendidos em desenvolvimento web</li>
+                        </ul>
+
+                        <div class="mini-info-grid">
+                            <div class="mini-box">
+                                <strong>Cliente</strong>
+                                <span>Consulta de reservas</span>
+                            </div>
+                            <div class="mini-box">
+                                <strong>Funcionário</strong>
+                                <span>Gestão administrativa</span>
+                            </div>
+                            <div class="mini-box">
+                                <strong>Banco</strong>
+                                <span>Persistência dos dados</span>
+                            </div>
+                            <div class="mini-box">
+                                <strong>Web</strong>
+                                <span>Interface responsiva</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="sobre" class="section section-light">
+            <div class="container">
+                <div class="section-head">
+                    <span class="section-tag">Sobre a franquia</span>
+                    <h2>Balanço do Portuga</h2>
+                    <p>
+                        A <strong>Balanço do Portuga</strong> representa uma franquia fictícia de aluguel
+                        de veículos criada para fins acadêmicos. A proposta do sistema é demonstrar como
+                        uma aplicação web pode auxiliar na organização de uma locadora, reunindo informações
+                        importantes em um ambiente simples, funcional e de fácil acesso.
+                    </p>
+                </div>
+
+                <div class="about-grid">
+                    <article class="info-card">
+                        <span class="icon-circle">🎯</span>
+                        <h3>Missão</h3>
+                        <p>
+                            Oferecer uma experiência prática e organizada para o processo de locação de veículos,
+                            facilitando o atendimento e o controle das informações.
+                        </p>
+                    </article>
+
+                    <article class="info-card">
+                        <span class="icon-circle">👁️</span>
+                        <h3>Visão</h3>
+                        <p>
+                            Simular uma solução eficiente para gestão de locadoras, utilizando tecnologia
+                            para melhorar processos administrativos.
+                        </p>
+                    </article>
+
+                    <article class="info-card">
+                        <span class="icon-circle">⭐</span>
+                        <h3>Valores</h3>
+                        <p>
+                            Organização, responsabilidade, clareza nas informações, praticidade e compromisso
+                            com a experiência do usuário.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="sistema" class="section">
+            <div class="container">
+                <div class="section-head center">
+                    <span class="section-tag">Funcionalidades</span>
+                    <h2>Principais módulos do sistema</h2>
+                    <p>
+                        A aplicação foi construída para representar os principais controles necessários
+                        em uma locadora de veículos.
+                    </p>
+                </div>
+
+                <div class="features-grid">
+                    <article class="feature-card">
+                        <span class="feature-icon">👥</span>
+                        <h3>Clientes</h3>
+                        <p>
+                            Permite cadastrar, editar, consultar e organizar as informações dos clientes
+                            da locadora.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <span class="feature-icon">🚗</span>
+                        <h3>Veículos</h3>
+                        <p>
+                            Possibilita o controle da frota, incluindo dados como modelo, marca, placa,
+                            ano e valor da diária.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <span class="feature-icon">📅</span>
+                        <h3>Reservas</h3>
+                        <p>
+                            Registra as reservas realizadas, relacionando cliente, veículo, período
+                            e valor total da locação.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <span class="feature-icon">💳</span>
+                        <h3>Pagamentos</h3>
+                        <p>
+                            Controla os pagamentos vinculados às reservas, permitindo acompanhar valores
+                            pagos e pendentes.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <span class="feature-icon">🔐</span>
+                        <h3>Área Restrita</h3>
+                        <p>
+                            Separa o acesso entre cliente e funcionário, direcionando cada usuário para
+                            sua área correspondente.
+                        </p>
+                    </article>
+
+                    <article class="feature-card">
+                        <span class="feature-icon">📊</span>
+                        <h3>Gestão</h3>
+                        <p>
+                            Centraliza informações importantes da locadora, facilitando a consulta
+                            e a organização dos dados.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section section-light">
+            <div class="container">
+                <div class="section-head center">
+                    <span class="section-tag">Como funciona</span>
+                    <h2>Fluxo básico da aplicação</h2>
+                    <p>
+                        O sistema foi pensado para representar de forma simples o processo de locação,
+                        desde o cadastro até o controle do pagamento.
+                    </p>
+                </div>
+
+                <div class="steps-grid">
+                    <article class="step-card">
+                        <span class="step-number">1</span>
+                        <h3>Cadastro</h3>
+                        <p>
+                            O funcionário registra clientes e veículos que farão parte do controle da locadora.
+                        </p>
+                    </article>
+
+                    <article class="step-card">
+                        <span class="step-number">2</span>
+                        <h3>Reserva</h3>
+                        <p>
+                            A reserva é criada vinculando um cliente a um veículo e definindo o período da locação.
+                        </p>
+                    </article>
+
+                    <article class="step-card">
+                        <span class="step-number">3</span>
+                        <h3>Pagamento</h3>
+                        <p>
+                            O sistema registra os pagamentos e acompanha a situação financeira da reserva.
+                        </p>
+                    </article>
+
+                    <article class="step-card">
+                        <span class="step-number">4</span>
+                        <h3>Acompanhamento</h3>
+                        <p>
+                            Cliente e funcionário acessam suas áreas para consultar informações relacionadas
+                            à locação.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="tecnologias" class="section">
+            <div class="container">
+                <div class="section-head center">
+                    <span class="section-tag">Tecnologias utilizadas</span>
+                    <h2>Base técnica do projeto</h2>
+                    <p>
+                        O desenvolvimento da aplicação permitiu aplicar conceitos de programação,
+                        desenvolvimento web, banco de dados e organização de sistemas.
+                    </p>
+                </div>
+
+                <div class="tech-list">
+                    <span>Java</span>
+                    <span>JSF</span>
+                    <span>PrimeFaces</span>
+                    <span>SQLite</span>
+                    <span>HTML</span>
+                    <span>CSS</span>
+                    <span>Maven</span>
+                    <span>GlassFish</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="equipe" class="section section-light">
+            <div class="container">
+                <div class="section-head center">
+                    <span class="section-tag">Equipe do projeto</span>
+                    <h2>Integrantes responsáveis pelo desenvolvimento</h2>
+                    <p>
+                        O projeto foi desenvolvido por quatro integrantes em fase de aprendizado,
+                        com divisão de tarefas entre interface, banco de dados, regras de negócio,
+                        testes e documentação.
+                    </p>
+                </div>
+
+                <div class="team-grid">
+                    <article class="team-card">
+                        <div class="member-photo">
+                            <img src="#{resource['images/integrantes/gabriel.jpeg']}" alt="Gabriel Silva"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                            <div class="member-fallback">GS</div>
+                        </div>
+                        <h3>Gabriel Silva</h3>
+                        <span class="role">Interface e Organização Visual</span>
+                        <p>
+                            Responsável pela estrutura visual das páginas, ajustes de layout, responsividade,
+                            organização da landing page e apoio na experiência do usuário.
+                        </p>
+                    </article>
+
+                    <article class="team-card">
+                        <div class="member-photo">
+                            <img src="#{resource['images/integrantes/gabryel.jpeg']}" alt="Gabryel Rosa"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                            <div class="member-fallback">GR</div>
+                        </div>
+                        <h3>Gabryel Rosa</h3>
+                        <span class="role">Banco de Dados</span>
+                        <p>
+                            Responsável pela modelagem do banco, criação das tabelas, organização dos
+                            relacionamentos e apoio na persistência dos dados.
+                        </p>
+                    </article>
+
+                    <article class="team-card">
+                        <div class="member-photo">
+                            <img src="#{resource['images/integrantes/antonino.jpeg']}" alt="Antonino"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                            <div class="member-fallback">A</div>
+                        </div>
+                        <h3>Antonino</h3>
+                        <span class="role">Regras de Negócio</span>
+                        <p>
+                            Responsável pelas funcionalidades relacionadas às reservas, controle dos veículos,
+                            pagamentos e comportamento principal do sistema.
+                        </p>
+                    </article>
+
+                    <article class="team-card">
+                        <div class="member-photo">
+                            <img src="#{resource['images/integrantes/vitor.jpeg']}" alt="Vitor"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />
+                            <div class="member-fallback">V</div>
+                        </div>
+                        <h3>Vitor</h3>
+                        <span class="role">Testes e Documentação</span>
+                        <p>
+                            Responsável pelos testes das funcionalidades, revisão dos fluxos, identificação
+                            de melhorias e apoio na documentação e apresentação acadêmica.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="acesso" class="section section-dark">
+            <div class="container">
+                <div class="section-head center light">
+                    <span class="section-tag light-tag">Área restrita</span>
+                    <h2>Acesse o sistema</h2>
+                    <p>
+                        A área restrita direciona clientes e funcionários para o login da aplicação.
+                    </p>
+                </div>
+
+                <div class="access-grid">
+                    <article class="access-card">
+                        <span class="access-icon">🙍</span>
+                        <h3>Área do Cliente</h3>
+                        <p>
+                            Permite ao cliente consultar suas reservas, pagamentos e informações relacionadas
+                            à locação.
+                        </p>
+                        <a href="login.xhtml?acesso=cliente" class="btn btn-light">Entrar como Cliente</a>
+                    </article>
+
+                    <article class="access-card">
+                        <span class="access-icon">🧑‍💼</span>
+                        <h3>Área do Funcionário</h3>
+                        <p>
+                            Permite ao funcionário gerenciar clientes, veículos, reservas e pagamentos
+                            da locadora.
+                        </p>
+                        <a href="login.xhtml?acesso=funcionario" class="btn btn-light">Entrar como Funcionário</a>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+<section id="contato" class="section">
+    <div class="container">
+        <div class="contact-box">
+            <div class="contact-content">
+                <span class="section-tag">Contato</span>
+                <h2>Informações da franquia</h2>
+                <p>
+                    Acompanhe a Balanço do Portuga nas redes sociais ou entre em contato
+                    pelos nossos canais de atendimento.
+                </p>
+
+                <div class="social-links">
+                    <a href="https://wa.me/5571997188255" target="_blank" rel="noopener" class="social-link whatsapp">
+                        <span class="social-icon">☎</span>
+                        <div>
+                            <strong>WhatsApp</strong>
+                            <small>(71) 99718-8255</small>
+                        </div>
+                    </a>
+
+                    <a href="https://www.instagram.com/" target="_blank" rel="noopener" class="social-link instagram">
+                        <span class="social-icon">◎</span>
+                        <div>
+                            <strong>Instagram</strong>
+                            <small>@balancodoportuga</small>
+                        </div>
+                    </a>
+
+                    <a href="https://www.facebook.com/" target="_blank" rel="noopener" class="social-link facebook">
+                        <span class="social-icon">f</span>
+                        <div>
+                            <strong>Facebook</strong>
+                            <small>Balanço do Portuga</small>
+                        </div>
+                    </a>
+
+                    <a href="mailto:contato@balancodoportuga.com" class="social-link email">
+                        <span class="social-icon">✉</span>
+                        <div>
+                            <strong>E-mail</strong>
+                            <small>contato@balancodoportuga.com</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="contact-info-panel">
+                <div class="contact-info-item">
+                    <span class="contact-info-icon">📍</span>
+                    <div>
+                        <strong>Localização</strong>
+                        <p>Salvador - BA</p>
+                    </div>
+                </div>
+
+                <div class="contact-info-item">
+                    <span class="contact-info-icon">🕒</span>
+                    <div>
+                        <strong>Atendimento</strong>
+                        <p>24 horas por dia</p>
+                    </div>
+                </div>
+
+                <div class="contact-info-item">
+                    <span class="contact-info-icon">🚗</span>
+                    <div>
+                        <strong>Serviço</strong>
+                        <p>Locação e gestão de veículos</p>
+                    </div>
+                </div>
+
+                <div class="contact-info-item">
+                    <span class="contact-info-icon">🎓</span>
+                    <div>
+                        <strong>Projeto</strong>
+                        <p>Sistema acadêmico desenvolvido para faculdade</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-wrap">
+            <p>© 2026 Balanço do Portuga • Projeto acadêmico.</p>
+            <p>Desenvolvido por equipe de estudantes.</p>
+        </div>
+    </footer>
+</h:body>
+</html>

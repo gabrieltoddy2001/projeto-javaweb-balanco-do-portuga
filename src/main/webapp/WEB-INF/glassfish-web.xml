@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<glassfish-web-app xmlns="https://glassfish.org/xml/ns/glassfish"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="https://glassfish.org/xml/ns/glassfish
+                                       https://glassfish.org/xml/ns/glassfish/glassfish-web-app_7_0.xsd"
+                   version="7.0">
+    <context-root>/BalancoDoPortugaWeb</context-root>
+    <class-loader delegate="true"/>
+</glassfish-web-app>

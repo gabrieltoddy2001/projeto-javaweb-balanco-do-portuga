@@ -1,0 +1,352 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:form id="reservaClienteForm">
+        <p:growl id="msgs" showSummary="true" showDetail="false" life="6000"/>
+
+        <section class="module-hero customer-reservation-hero reservation-redesign-hero">
+            <div>
+                <span class="module-tag">Área do cliente</span>
+                <h1>Minhas Reservas</h1>
+                <p>
+                    Escolha um veículo, confira a foto e os detalhes da locação antes de confirmar sua reserva.
+                </p>
+            </div>
+        </section>
+
+        <section class="customer-reservation-tabs-wrapper reservation-redesign-wrapper">
+            <p:tabView styleClass="tabview-dark customer-reservation-tabs">
+
+                <p:tab title="Nova Reserva">
+                    <div class="reservation-booking-layout">
+
+                        <section class="reservation-main-card">
+                            <div class="reservation-card-header">
+                                <div>
+                                    <span class="panel-subtitle">Nova solicitação</span>
+                                    <h2>Escolha seu veículo</h2>
+                                    <p>
+                                        Selecione um veículo disponível para visualizar a foto, dados principais e valor da diária.
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="reservation-form-block">
+                                <div class="form-field">
+                                    <label class="form-label">Veículo disponível</label>
+
+                                    <p:selectOneMenu id="veiculoReservaSelect"
+                                                     value="#{reservaBean.veiculoSelecionadoId}"
+                                                     styleClass="customer-vehicle-select reservation-select-full"
+                                                     panelStyleClass="customer-vehicle-panel"
+                                                     appendTo="@(body)">
+                                        <f:selectItem itemLabel="Selecione um veículo" itemValue="0"/>
+                                        <f:selectItems value="#{reservaBean.veiculosDisponiveis}"
+                                                       var="v"
+                                                       itemLabel="#{v.modelo} - #{v.marca} (#{v.tipo eq 'MOTO' ? 'Moto' : 'Carro'}) - R$ #{v.diaria}/dia"
+                                                       itemValue="#{v.id}"/>
+
+                                        <p:ajax event="change"
+                                                listener="#{reservaBean.atualizarVeiculoPreview}"
+                                                process="@this"
+                                                update="veiculoPreviewPanel estimativa msgs"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <p:outputPanel id="veiculoPreviewPanel" layout="block">
+                                    <h:panelGroup rendered="#{reservaBean.veiculoPreview != null}">
+                                        <div class="reservation-vehicle-showcase">
+                                            <div class="reservation-vehicle-image-box">
+                                                <h:panelGroup rendered="#{not empty reservaBean.veiculoPreview.foto}">
+                                                    <img src="#{request.contextPath}/#{reservaBean.veiculoPreview.foto}"
+                                                         alt="Foto do veículo"
+                                                         class="reservation-vehicle-image"/>
+                                                </h:panelGroup>
+
+                                                <h:panelGroup rendered="#{empty reservaBean.veiculoPreview.foto}">
+                                                    <div class="reservation-vehicle-placeholder">
+                                                        <h:panelGroup rendered="#{reservaBean.veiculoPreview.tipo eq 'MOTO'}">
+                                                            <i class="pi pi-bolt"></i>
+                                                        </h:panelGroup>
+
+                                                        <h:panelGroup rendered="#{reservaBean.veiculoPreview.tipo ne 'MOTO'}">
+                                                            <i class="pi pi-car"></i>
+                                                        </h:panelGroup>
+                                                    </div>
+                                                </h:panelGroup>
+                                            </div>
+
+                                            <div class="reservation-vehicle-content">
+                                                <div class="reservation-vehicle-top">
+                                                    <div>
+                                                        <span class="vehicle-type-badge #{reservaBean.veiculoPreview.tipo eq 'MOTO' ? 'type-moto' : 'type-carro'}">
+                                                            <h:outputText value="#{reservaBean.veiculoPreview.tipo eq 'MOTO' ? 'Moto' : 'Carro'}"/>
+                                                        </span>
+
+                                                        <h3>
+                                                            <h:outputText value="#{reservaBean.veiculoPreview.modelo}"/>
+                                                        </h3>
+
+                                                        <p>
+                                                            <h:outputText value="#{reservaBean.veiculoPreview.marca}"/>
+                                                        </p>
+                                                    </div>
+
+                                                    <div class="reservation-price-pill">
+                                                        <small>Diária</small>
+                                                        <strong>
+                                                            R$
+                                                            <h:outputText value="#{reservaBean.veiculoPreview.diaria}">
+                                                                <f:convertNumber pattern="#,##0.00"/>
+                                                            </h:outputText>
+                                                        </strong>
+                                                    </div>
+                                                </div>
+
+                                                <div class="reservation-vehicle-specs">
+                                                    <div>
+                                                        <small>Placa</small>
+                                                        <strong>
+                                                            <h:outputText value="#{reservaBean.veiculoPreview.placa}"/>
+                                                        </strong>
+                                                    </div>
+
+                                                    <div>
+                                                        <small>Ano</small>
+                                                        <strong>
+                                                            <h:outputText value="#{reservaBean.veiculoPreview.ano}"/>
+                                                        </strong>
+                                                    </div>
+
+                                                    <div>
+                                                        <small>Categoria</small>
+                                                        <strong>
+                                                            <h:outputText value="#{reservaBean.veiculoPreview.tipo eq 'MOTO' ? 'Moto' : 'Carro'}"/>
+                                                        </strong>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+
+                                    <h:panelGroup rendered="#{reservaBean.veiculoPreview == null}">
+                                        <div class="reservation-empty-preview">
+                                            <i class="pi pi-car"></i>
+                                            <h3>Nenhum veículo selecionado</h3>
+                                            <p>Escolha um veículo acima para visualizar a foto e os detalhes da locação.</p>
+                                        </div>
+                                    </h:panelGroup>
+                                </p:outputPanel>
+                            </div>
+                        </section>
+
+                        <aside class="reservation-side-card">
+                            <div class="reservation-side-header">
+                                <span class="panel-subtitle">Período</span>
+                                <h2>Datas da reserva</h2>
+                                <p>Escolha o período desejado para calcular a estimativa da locação.</p>
+                            </div>
+
+                            <div class="reservation-date-box">
+                                <div class="form-field">
+                                    <label class="form-label">Data início</label>
+                                    <p:datePicker id="dataInicioReserva"
+              value="#{reservaBean.novaDataInicio}"
+              pattern="dd/MM/yyyy"
+              mask="true"
+              showIcon="true"
+              placeholder="Data inicial"
+              styleClass="date-picker-compact"
+              inputStyleClass="input-dark">
+    <p:ajax event="dateSelect"
+            listener="#{reservaBean.atualizarEstimativa}"
+            process="@form"
+            update="estimativa"/>
+
+    <p:ajax event="change"
+            listener="#{reservaBean.atualizarEstimativa}"
+            process="@form"
+            update="estimativa"/>
+</p:datePicker>
+                                </div>
+
+                                <div class="form-field">
+                                    <label class="form-label">Data fim</label>
+                                    <p:datePicker id="dataFimReserva"
+              value="#{reservaBean.novaDataFim}"
+              pattern="dd/MM/yyyy"
+              mask="true"
+              showIcon="true"
+              placeholder="Data final"
+              styleClass="date-picker-compact"
+              inputStyleClass="input-dark">
+    <p:ajax event="dateSelect"
+            listener="#{reservaBean.atualizarEstimativa}"
+            process="@form"
+            update="estimativa"/>
+
+    <p:ajax event="change"
+            listener="#{reservaBean.atualizarEstimativa}"
+            process="@form"
+            update="estimativa"/>
+</p:datePicker>
+                                </div>
+                            </div>
+
+                            <p:outputPanel id="estimativa">
+                                <h:panelGroup rendered="#{not empty reservaBean.estimativa}">
+                                    <div class="reservation-estimate-card">
+                                        <span>Estimativa da locação</span>
+                                        <strong>
+                                            <h:outputText value="#{reservaBean.estimativa}"/>
+                                        </strong>
+                                    </div>
+                                </h:panelGroup>
+
+                                <h:panelGroup rendered="#{empty reservaBean.estimativa}">
+                                    <div class="reservation-estimate-empty">
+                                        <i class="pi pi-calculator"></i>
+                                        <p>Selecione o veículo e as datas para visualizar a estimativa.</p>
+                                    </div>
+                                </h:panelGroup>
+                            </p:outputPanel>
+
+                            <div class="reservation-action-stack">
+                                <p:commandButton value="Verificar disponibilidade"
+                                                 icon="pi pi-search"
+                                                 action="#{reservaBean.verificarDisponibilidade}"
+                                                 process="@form"
+                                                 update="@form"
+                                                 styleClass="btn-blue reservation-full-button"/>
+
+                                <p:commandButton value="Confirmar reserva"
+                                                 icon="pi pi-check"
+                                                 action="#{reservaBean.criarReservaCliente}"
+                                                 process="@form"
+                                                 update="@form"
+                                                 styleClass="btn-green reservation-full-button"/>
+                            </div>
+
+                            <div class="reservation-help-mini">
+                                <div>
+                                    <span>1</span>
+                                    <p>Escolha o veículo.</p>
+                                </div>
+
+                                <div>
+                                    <span>2</span>
+                                    <p>Confira a foto e os dados.</p>
+                                </div>
+
+                                <div>
+                                    <span>3</span>
+                                    <p>Selecione as datas.</p>
+                                </div>
+
+                                <div>
+                                    <span>4</span>
+                                    <p>Confirme a solicitação.</p>
+                                </div>
+                            </div>
+                        </aside>
+                    </div>
+                </p:tab>
+
+                <p:tab title="Histórico de Reservas">
+                    <div class="module-card customer-history-card reservation-history-redesign">
+                        <div class="module-card-header">
+                            <div>
+                                <span class="panel-subtitle">Histórico</span>
+                                <h2>Reservas realizadas</h2>
+                            </div>
+                        </div>
+
+                        <div class="table-responsive">
+                            <p:dataTable id="tabelaHistorico"
+                                         var="r"
+                                         value="#{reservaBean.reservasCliente}"
+                                         styleClass="dark-table customer-reservation-table"
+                                         emptyMessage="Nenhuma reserva encontrada."
+                                         paginator="true"
+                                         rows="10"
+                                         paginatorPosition="bottom"
+                                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                         rowStyleClass="dark-row">
+
+                                <p:column headerText="Reserva" width="90">
+                                    <span class="reservation-code">
+                                        #<h:outputText value="#{r.id}"/>
+                                    </span>
+                                </p:column>
+
+                                <p:column headerText="Veículo" width="310">
+                                    <div class="reservation-vehicle-cell">
+                                        <h:panelGroup rendered="#{not empty r.vehicle.foto}">
+                                            <img src="#{request.contextPath}/#{r.vehicle.foto}"
+                                                 alt="Foto do veículo"
+                                                 class="vehicle-photo-thumb"/>
+                                        </h:panelGroup>
+
+                                        <h:panelGroup rendered="#{empty r.vehicle.foto}">
+                                            <span class="reservation-car-icon">
+                                                <h:panelGroup rendered="#{r.vehicle.tipo eq 'MOTO'}">
+                                                    <i class="pi pi-bolt"></i>
+                                                </h:panelGroup>
+
+                                                <h:panelGroup rendered="#{r.vehicle.tipo ne 'MOTO'}">
+                                                    <i class="pi pi-car"></i>
+                                                </h:panelGroup>
+                                            </span>
+                                        </h:panelGroup>
+
+                                        <div>
+                                            <strong>
+                                                <h:outputText value="#{r.vehicle.modelo}"/>
+                                            </strong>
+                                            <small>
+                                                <h:outputText value="#{r.vehicle.placa}"/>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </p:column>
+
+                                <p:column headerText="Data Início" width="130">
+                                    <h:outputText value="#{r.dataInicio}">
+    <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+</h:outputText>
+                                </p:column>
+
+                                <p:column headerText="Data Fim" width="130">
+                                    <h:outputText value="#{r.dataFim}">
+    <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+</h:outputText>
+                                </p:column>
+
+                                <p:column headerText="Total" width="140">
+                                    <span class="price-text">
+                                        R$
+                                        <h:outputText value="#{r.total}">
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputText>
+                                    </span>
+                                </p:column>
+
+                                <p:column headerText="Status" width="135">
+                                    <h:outputText value="#{r.statusDescricao}"
+              styleClass="status-badge status-#{r.statusClasse}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </div>
+                </p:tab>
+            </p:tabView>
+        </section>
+
+        <div class="footer-area">
+            <p class="footer-text">&#169; 2026 - Balanço do Portuga | Minhas Reservas</p>
+        </div>
+    </h:form>
+</ui:composition>

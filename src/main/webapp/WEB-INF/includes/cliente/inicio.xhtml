@@ -1,0 +1,204 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <section class="dash-hero">
+        <div>
+            <span class="module-tag">Área do cliente</span>
+            <h1>
+                Bem-vindo,
+                <h:outputText value="#{loginBean.clienteLogado.nome}"/>
+            </h1>
+            <p>
+                Acompanhe suas reservas, consulte pagamentos e veja o andamento financeiro
+                das suas locações.
+            </p>
+        </div>
+
+        <div class="dash-company-card">
+            <span>Cliente</span>
+            <strong>
+                <h:outputText value="#{loginBean.clienteLogado.nome}"/>
+            </strong>
+            <small>
+                <h:outputText value="#{loginBean.clienteLogado.email}"/>
+            </small>
+        </div>
+    </section>
+
+    <section class="dash-kpi-grid">
+        <div class="dash-kpi-card">
+            <div class="dash-kpi-icon blue"><i class="pi pi-calendar"></i></div>
+            <div>
+                <span>Total de Reservas</span>
+                <strong>#{dashboardClienteBean.totalReservas}</strong>
+                <small>Reservas vinculadas ao cliente</small>
+            </div>
+        </div>
+
+        <div class="dash-kpi-card">
+            <div class="dash-kpi-icon green"><i class="pi pi-check-circle"></i></div>
+            <div>
+                <span>Reservas Ativas</span>
+                <strong>#{dashboardClienteBean.reservasAtivas}</strong>
+                <small>Reservas em andamento</small>
+            </div>
+        </div>
+
+        <div class="dash-kpi-card">
+            <div class="dash-kpi-icon purple"><i class="pi pi-credit-card"></i></div>
+            <div>
+                <span>Total Pago</span>
+                <strong>
+                    R$
+                    <h:outputText value="#{dashboardClienteBean.totalPago}">
+                        <f:convertNumber pattern="#,##0.00"/>
+                    </h:outputText>
+                </strong>
+                <small>Pagamentos registrados</small>
+            </div>
+        </div>
+
+        <div class="dash-kpi-card">
+            <div class="dash-kpi-icon orange"><i class="pi pi-exclamation-triangle"></i></div>
+            <div>
+                <span>Valor Pendente</span>
+                <strong>
+                    R$
+                    <h:outputText value="#{dashboardClienteBean.valorPendente}">
+                        <f:convertNumber pattern="#,##0.00"/>
+                    </h:outputText>
+                </strong>
+                <small>Valor ainda em aberto</small>
+            </div>
+        </div>
+    </section>
+
+    <section class="dash-content-grid">
+        <div class="dash-panel">
+            <div class="dash-panel-header">
+                <div>
+                    <span class="panel-subtitle">Reserva atual</span>
+                    <h2>Situação da Locação</h2>
+                </div>
+            </div>
+
+            <h:panelGroup rendered="#{dashboardClienteBean.reservaAtual != null}">
+                <div class="payment-info-box">
+                    <div>
+                        <small>Veículo</small>
+                        <strong>
+                            <h:outputText value="#{dashboardClienteBean.reservaAtual.vehicle.modelo}"/>
+                        </strong>
+                    </div>
+
+                    <div>
+                        <small>Período</small>
+                        <strong>
+                            <h:outputText value="#{dashboardClienteBean.reservaAtual.dataInicioFormatada}"/>
+                            até
+                            <h:outputText value="#{dashboardClienteBean.reservaAtual.dataFimFormatada}"/>
+                        </strong>
+                    </div>
+                </div>
+
+                <div class="customer-payment-progress">
+                    <div class="progress-label-row">
+                        <span>Progresso do pagamento</span>
+                        <strong>#{dashboardClienteBean.progressoReservaAtual}%</strong>
+                    </div>
+
+                    <div class="progress-bar-track large-track">
+                        <div class="progress-bar-fill"
+                             style="width:#{dashboardClienteBean.progressoReservaAtual}%; background-color:#{dashboardClienteBean.corProgressoReservaAtual};">
+                            <span class="progress-text">#{dashboardClienteBean.progressoReservaAtual}%</span>
+                        </div>
+                    </div>
+                </div>
+            </h:panelGroup>
+
+            <h:panelGroup rendered="#{dashboardClienteBean.reservaAtual == null}">
+                <div class="customer-payment-empty-card">
+                    <div class="empty-icon"><i class="pi pi-car"></i></div>
+                    <h3>Nenhuma reserva ativa</h3>
+                    <p>
+                        Você não possui uma reserva ativa no momento.
+                        Acesse Minhas Reservas para criar ou consultar suas solicitações.
+                    </p>
+                </div>
+            </h:panelGroup>
+        </div>
+
+        <div class="dash-panel">
+            <div class="dash-panel-header">
+                <div>
+                    <span class="panel-subtitle">Ações rápidas</span>
+                    <h2>Atalhos</h2>
+                </div>
+            </div>
+
+            <h:form id="clienteDashboardActionsForm">
+                <div class="dash-action-grid">
+                    <p:commandLink action="#{painelBean.abrirCliente('reservas')}"
+                                   process="@this"
+                                   update=":menuClienteForm :conteudoCliente"
+                                   styleClass="dash-action-card">
+                        <span><i class="pi pi-calendar"></i></span>
+                        <strong>Minhas Reservas</strong>
+                        <small>Criar e consultar reservas</small>
+                    </p:commandLink>
+
+                    <p:commandLink action="#{painelBean.abrirCliente('pagamentos')}"
+                                   process="@this"
+                                   update=":menuClienteForm :conteudoCliente"
+                                   styleClass="dash-action-card">
+                        <span><i class="pi pi-credit-card"></i></span>
+                        <strong>Meus Pagamentos</strong>
+                        <small>Consultar e pagar pendências</small>
+                    </p:commandLink>
+                </div>
+            </h:form>
+        </div>
+    </section>
+
+    <section class="dash-panel">
+        <div class="dash-panel-header">
+            <div>
+                <span class="panel-subtitle">Histórico recente</span>
+                <h2>Últimas Reservas</h2>
+            </div>
+        </div>
+
+        <div class="dash-reservation-list">
+            <ui:repeat value="#{dashboardClienteBean.ultimasReservas}" var="r">
+                <div class="dash-reservation-item">
+                    <div class="dash-reservation-icon">
+                        #<h:outputText value="#{r.id}"/>
+                    </div>
+
+                    <div class="dash-reservation-info">
+                        <strong>
+                            <h:outputText value="#{r.vehicle.modelo}"/>
+                        </strong>
+
+                        <small>
+                            <h:outputText value="#{r.dataInicioFormatada}"/>
+                            até
+                            <h:outputText value="#{r.dataFimFormatada}"/>
+                        </small>
+                    </div>
+
+                    <span class="status-badge status-#{r.statusClasse}">
+    <h:outputText value="#{r.statusDescricao}"/>
+</span>
+                </div>
+            </ui:repeat>
+        </div>
+    </section>
+
+    <div class="footer-area">
+        <p class="footer-text">&#169; 2026 - Balanço do Portuga | Área do Cliente</p>
+    </div>
+</ui:composition>

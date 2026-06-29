@@ -1,0 +1,483 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:h="jakarta.faces.html"
+                xmlns:f="jakarta.faces.core"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+
+    <h:form id="pagamentoForm">
+            <p:growl id="msgs" showDetail="true" life="5000"/>
+
+            <section class="module-hero payment-hero">
+                <div>
+                    <span class="module-tag">Controle financeiro</span>
+                    <h1>Pagamentos da Locadora</h1>
+                    <p>
+                        Acompanhe o status financeiro das reservas, registre pagamentos,
+                        visualize históricos e aplique multas quando necessário.
+                    </p>
+                </div>
+            </section>
+
+            <section class="module-toolbar payment-toolbar payment-toolbar-clean">
+                <div class="toolbar-title">
+                    <span>Busca rápida</span>
+                    <strong>Filtrar pagamentos</strong>
+                </div>
+
+                <div class="payment-filter-grid">
+                    <p:selectOneMenu id="filtroStatus"
+                                     value="#{pagamentoBean.filtroStatus}"
+                                     styleClass="payment-status-select"
+                                     panelStyleClass="payment-status-panel"
+                                     appendTo="@(body)">
+                        <f:selectItem itemLabel="Todos os Status" itemValue=""/>
+                        <f:selectItem itemLabel="PENDENTE" itemValue="PENDENTE"/>
+                        <f:selectItem itemLabel="PARCIAL" itemValue="PARCIAL"/>
+                        <f:selectItem itemLabel="PAGO" itemValue="PAGO"/>
+                    </p:selectOneMenu>
+
+                    <p:inputText id="filtroBusca"
+                                 value="#{pagamentoBean.filtroBusca}"
+                                 placeholder="Buscar cliente ou veículo..."
+                                 styleClass="input-dark payment-filter-input"/>
+
+                    <p:commandButton value="Filtrar"
+                                     action="#{pagamentoBean.filtrar}"
+                                     process="@this filtroStatus filtroBusca"
+                                     update="tabelaReservasPag msgs"
+                                     styleClass="btn-blue"/>
+
+                    <p:commandButton value="Limpar"
+                                     action="#{pagamentoBean.limparFiltro}"
+                                     process="@this"
+                                     update="tabelaReservasPag msgs @parent"
+                                     styleClass="btn-dark"/>
+                </div>
+            </section>
+
+            <section class="module-card">
+                <div class="module-card-header">
+                    <div>
+                        <span class="panel-subtitle">Listagem</span>
+                        <h2>Reservas e pagamentos</h2>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <p:dataTable id="tabelaReservasPag"
+                                 var="r"
+                                 value="#{pagamentoBean.reservasFuncionario}"
+                                 styleClass="dark-table payment-table"
+                                 emptyMessage="Nenhuma reserva encontrada."
+                                 paginator="true"
+                                 rows="10"
+                                 paginatorPosition="bottom"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                                 rowKey="#{r.id}"
+                                 selectionMode="single"
+                                 selection="#{pagamentoBean.reservaSelecionada}"
+                                 rowStyleClass="dark-row">
+
+                        <p:column headerText="Reserva" width="85">
+                            <span class="reservation-code">
+                                #<h:outputText value="#{r.id}"/>
+                            </span>
+                        </p:column>
+
+                        <p:column headerText="Cliente" width="220">
+                            <div class="payment-person-cell">
+                                <span class="payment-avatar">
+                                    <h:outputText value="#{empty r.client.nome ? 'C' : r.client.nome.substring(0,1)}"/>
+                                </span>
+
+                                <div>
+                                    <strong>
+                                        <h:outputText value="#{r.client.nome}"/>
+                                    </strong>
+                                    <small>Cliente da locadora</small>
+                                </div>
+                            </div>
+                        </p:column>
+
+                        <p:column headerText="Veículo" width="210">
+    <div class="payment-vehicle-cell">
+        <h:panelGroup rendered="#{not empty r.vehicle.foto}">
+            <img src="#{request.contextPath}/#{r.vehicle.foto}"
+                 alt="Foto do veículo"
+                 class="vehicle-photo-thumb"/>
+        </h:panelGroup>
+
+        <h:panelGroup rendered="#{empty r.vehicle.foto}">
+            <span class="payment-car-icon">
+                <h:panelGroup rendered="#{r.vehicle.tipo eq 'MOTO'}">
+                    <i class="pi pi-bolt"></i>
+                </h:panelGroup>
+
+                <h:panelGroup rendered="#{r.vehicle.tipo ne 'MOTO'}">
+                    <i class="pi pi-car"></i>
+                </h:panelGroup>
+            </span>
+        </h:panelGroup>
+
+        <div>
+            <strong>
+                <h:outputText value="#{r.vehicle.modelo}"/>
+            </strong>
+            <small>
+                <h:outputText value="#{r.vehicle.placa}"/>
+            </small>
+        </div>
+    </div>
+</p:column>
+
+                        <p:column headerText="Início" width="110">
+    <h:outputText value="#{r.dataInicio}">
+        <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+    </h:outputText>
+</p:column>
+
+<p:column headerText="Fim" width="110">
+    <h:outputText value="#{r.dataFim}">
+        <f:convertDateTime type="localDate" pattern="dd/MM/yyyy"/>
+    </h:outputText>
+</p:column>
+
+                        <p:column headerText="Valor Total" width="140">
+                            <span class="price-text">
+                                R$
+                                <h:outputText value="#{r.total}">
+                                    <f:convertNumber pattern="#,##0.00"/>
+                                </h:outputText>
+                            </span>
+                        </p:column>
+
+                        <p:column headerText="Status Pgto" width="140">
+                            <h:outputText value="#{pagamentoBean.getStatusPagamento(r)}"
+                                          styleClass="status-badge status-#{pagamentoBean.getStatusPagamento(r).toLowerCase()}"/>
+                        </p:column>
+
+                        <p:column headerText="Ações" width="210" styleClass="col-acoes">
+                            <div class="payment-actions">
+                                <p:commandButton icon="pi pi-dollar"
+                 styleClass="btn-icon-green"
+                 title="Registrar pagamento"
+                 action="#{pagamentoBean.prepararRegistro}"
+                 process="@this"
+                 oncomplete="if(!args.validationFailed) PF('registroDlg').show()"
+                 update=":pagamentoForm:registroPanel :pagamentoForm:msgs"
+                 disabled="#{pagamentoBean.getStatusPagamento(r) eq 'PAGO'}">
+    <f:setPropertyActionListener value="#{r}"
+                                 target="#{pagamentoBean.reservaSelecionada}"/>
+</p:commandButton>
+
+<p:commandButton icon="pi pi-list"
+                 styleClass="btn-icon-blue"
+                 title="Detalhes do pagamento"
+                 action="#{pagamentoBean.prepararDetalhes}"
+                 process="@this"
+                 oncomplete="if(!args.validationFailed) PF('detalhesDlg').show()"
+                 update=":pagamentoForm:detalhesPanel :pagamentoForm:msgs">
+    <f:setPropertyActionListener value="#{r}"
+                                 target="#{pagamentoBean.reservaSelecionada}"/>
+</p:commandButton>
+
+                                <p:commandButton icon="pi pi-exclamation-triangle"
+                 styleClass="btn-icon-yellow"
+                 title="Aplicar multa"
+                 action="#{pagamentoBean.prepararMulta}"
+                 process="@this"
+                 oncomplete="if(!args.validationFailed) PF('multaDlg').show()"
+                 update=":pagamentoForm:multaPanel :pagamentoForm:msgs">
+    <f:setPropertyActionListener value="#{r}"
+                                 target="#{pagamentoBean.reservaSelecionada}"/>
+</p:commandButton>
+                            </div>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </section>
+
+            <p:dialog header="Registrar Pagamento"
+                      widgetVar="registroDlg"
+                      modal="true"
+                      styleClass="dialog-dark payment-dialog"
+                      width="520"
+                      resizable="false"
+                      closable="true"
+                      fitViewport="true"
+                      responsive="true">
+
+                <p:outputPanel id="registroPanel">
+                    <p:outputPanel rendered="#{pagamentoBean.reservaSelecionada != null}">
+                        <div class="payment-dialog-body">
+                            <div class="dialog-intro">
+                                <span>Registro financeiro</span>
+                                <p>Informe o valor recebido e o método utilizado para pagamento.</p>
+                            </div>
+
+                            <div class="payment-info-box">
+                                <div>
+                                    <small>Reserva</small>
+                                    <strong>
+                                        #<h:outputText value="#{pagamentoBean.reservaSelecionada.id}"/>
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <small>Cliente</small>
+                                    <strong>
+                                        <h:outputText value="#{pagamentoBean.reservaSelecionada.client.nome}"/>
+                                    </strong>
+                                </div>
+                            </div>
+
+                            <div class="payment-values-grid">
+                                <div class="payment-value-card">
+                                    <small>Valor total</small>
+                                    <strong>
+                                        R$
+                                        <h:outputText value="#{pagamentoBean.reservaSelecionada.total}">
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputText>
+                                    </strong>
+                                </div>
+
+                                <div class="payment-value-card">
+                                    <small>Valor restante</small>
+                                    <strong>
+                                        R$
+                                        <h:outputText value="#{pagamentoBean.valorRestante}">
+                                            <f:convertNumber pattern="#,##0.00"/>
+                                        </h:outputText>
+                                    </strong>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3 class="section-title">Dados do pagamento</h3>
+
+                                <div class="form-grid">
+                                    <div class="form-field">
+                                        <label class="form-label">Valor do pagamento (R$)</label>
+                                        <p:inputText value="#{pagamentoBean.valorPagamento}"
+                                                     styleClass="input-dark"
+                                                     placeholder="Ex: 150.00"
+                                                     required="true"
+                                                     requiredMessage="Informe o valor do pagamento."/>
+                                    </div>
+
+                                    <div class="form-field">
+                                        <label class="form-label">Método de pagamento</label>
+                                        <p:selectOneMenu value="#{pagamentoBean.metodoPagamentoFuncionario}"
+                                                         styleClass="payment-method-select"
+                                                         panelStyleClass="payment-method-panel"
+                                                         appendTo="@(body)"
+                                                         required="true"
+                                                         requiredMessage="Informe o método de pagamento.">
+                                            <f:selectItem itemLabel="Pix" itemValue="Pix"/>
+                                            <f:selectItem itemLabel="Cartão de Crédito" itemValue="Cartão de Crédito"/>
+                                            <f:selectItem itemLabel="Cartão de Débito" itemValue="Cartão de Débito"/>
+                                            <f:selectItem itemLabel="Dinheiro" itemValue="Dinheiro"/>
+                                        </p:selectOneMenu>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dialog-buttons payment-dialog-footer">
+                            <p:commandButton value="Confirmar Pagamento"
+                                             action="#{pagamentoBean.registrarPagamento}"
+                                             process="@this registroPanel"
+                                             update=":pagamentoForm:tabelaReservasPag :pagamentoForm:msgs :pagamentoForm:registroPanel"
+                                             oncomplete="if(!args.validationFailed) PF('registroDlg').hide()"
+                                             styleClass="btn-green"/>
+
+                            <p:commandButton value="Cancelar"
+                                             onclick="PF('registroDlg').hide()"
+                                             type="button"
+                                             styleClass="btn-dark"/>
+                        </div>
+                    </p:outputPanel>
+                </p:outputPanel>
+            </p:dialog>
+
+            <p:dialog header="Detalhes do Pagamento"
+                      widgetVar="detalhesDlg"
+                      modal="true"
+                      styleClass="dialog-dark payment-detail-dialog"
+                      width="650"
+                      resizable="false"
+                      closable="true"
+                      fitViewport="true"
+                      responsive="true">
+
+                <p:outputPanel id="detalhesPanel">
+                    <p:outputPanel rendered="#{pagamentoBean.reservaSelecionada != null}">
+                        <div class="payment-dialog-body">
+                            <div class="dialog-intro">
+                                <span>Histórico</span>
+                                <p>Visualize o progresso e os pagamentos vinculados à reserva.</p>
+                            </div>
+
+                            <div class="payment-info-box">
+                                <div>
+                                    <small>Reserva</small>
+                                    <strong>
+                                        #<h:outputText value="#{pagamentoBean.reservaSelecionada.id}"/>
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <small>Cliente</small>
+                                    <strong>
+                                        <h:outputText value="#{pagamentoBean.reservaSelecionada.client.nome}"/>
+                                    </strong>
+                                </div>
+                            </div>
+
+                            <div class="progress-container payment-progress">
+                                <label class="form-label">Progresso do pagamento</label>
+
+                                <div class="progress-bar-track large-track">
+                                    <div class="progress-bar-fill"
+                                         style="width:#{pagamentoBean.progressoPagamento}%; background-color:#{pagamentoBean.corProgresso};">
+                                        <span class="progress-text">#{pagamentoBean.progressoPagamento}%</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="payment-history-box">
+                                <div class="module-card-header compact-header">
+                                    <div>
+                                        <span class="panel-subtitle">Histórico</span>
+                                        <h2>Pagamentos registrados</h2>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <p:dataTable var="p"
+             value="#{pagamentoBean.pagamentosDetalhe}"
+             styleClass="dark-table compact-table payment-detail-table"
+             emptyMessage="Nenhuma movimentação registrada.">
+
+    <p:column headerText="ID" width="60">
+        <h:outputText value="#{p.id}"/>
+    </p:column>
+
+    <p:column headerText="Data" width="110">
+        <h:outputText value="#{p.dataPagamentoFormatada}"/>
+    </p:column>
+
+    <p:column headerText="Tipo" width="110">
+        <span class="status-badge #{p.multa ? 'status-cancelada' : 'status-pago'}">
+            <h:outputText value="#{p.tipo}"/>
+        </span>
+    </p:column>
+
+    <p:column headerText="Valor" width="130">
+        <span class="price-text">
+            R$
+            <h:outputText value="#{p.valor}">
+                <f:convertNumber pattern="#,##0.00"/>
+            </h:outputText>
+        </span>
+    </p:column>
+
+    <p:column headerText="Descrição/Método">
+        <h:outputText value="#{p.metodoPagamento}"/>
+    </p:column>
+</p:dataTable>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dialog-buttons payment-dialog-footer">
+                            <p:commandButton value="Fechar"
+                                             onclick="PF('detalhesDlg').hide()"
+                                             type="button"
+                                             styleClass="btn-dark"/>
+                        </div>
+                    </p:outputPanel>
+                </p:outputPanel>
+            </p:dialog>
+
+            <p:dialog header="Aplicar Multa"
+                      widgetVar="multaDlg"
+                      modal="true"
+                      styleClass="dialog-dark payment-dialog"
+                      width="520"
+                      resizable="false"
+                      closable="true"
+                      fitViewport="true"
+                      responsive="true">
+
+                <p:outputPanel id="multaPanel">
+                    <p:outputPanel rendered="#{pagamentoBean.reservaSelecionada != null}">
+                        <div class="payment-dialog-body">
+                            <div class="dialog-intro warning-intro">
+                                <span>Multa</span>
+                                <p>Informe o motivo e o valor da multa que será vinculada à reserva.</p>
+                            </div>
+
+                            <div class="payment-info-box">
+                                <div>
+                                    <small>Reserva</small>
+                                    <strong>
+                                        #<h:outputText value="#{pagamentoBean.reservaSelecionada.id}"/>
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <small>Cliente</small>
+                                    <strong>
+                                        <h:outputText value="#{pagamentoBean.reservaSelecionada.client.nome}"/>
+                                    </strong>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h3 class="section-title">Dados da multa</h3>
+
+                                <div class="form-grid">
+                                    <div class="form-field">
+                                        <label class="form-label">Motivo da multa</label>
+                                        <p:inputTextarea value="#{pagamentoBean.motivoMulta}"
+                                                         styleClass="input-dark"
+                                                         rows="3"
+                                                         cols="40"
+                                                         placeholder="Descreva o motivo da multa"
+                                                         required="true"
+                                                         requiredMessage="Informe o motivo da multa."/>
+                                    </div>
+
+                                    <div class="form-field">
+                                        <label class="form-label">Valor da multa (R$)</label>
+                                        <p:inputText value="#{pagamentoBean.valorMulta}"
+                                                     styleClass="input-dark"
+                                                     placeholder="Ex: 80.00"
+                                                     required="true"
+                                                     requiredMessage="Informe o valor da multa."/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dialog-buttons payment-dialog-footer">
+                            <p:commandButton value="Aplicar Multa"
+                                             action="#{pagamentoBean.aplicarMulta}"
+                                             process="@this multaPanel"
+                                             update=":pagamentoForm:tabelaReservasPag :pagamentoForm:msgs :pagamentoForm:multaPanel"
+                                             oncomplete="if(!args.validationFailed) PF('multaDlg').hide()"
+                                             styleClass="btn-yellow"/>
+
+                            <p:commandButton value="Cancelar"
+                                             onclick="PF('multaDlg').hide()"
+                                             type="button"
+                                             styleClass="btn-dark"/>
+                        </div>
+                    </p:outputPanel>
+                </p:outputPanel>
+            </p:dialog>
+        </h:form>
+
+</ui:composition>
