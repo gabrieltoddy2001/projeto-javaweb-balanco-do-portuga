@@ -37,6 +37,15 @@
             </p>
         </div>
 
+        <h:panelGroup layout="block" styleClass="demo-acessos" rendered="#{loginBean.modoDemo}">
+            <strong>Versão de demonstração</strong> – use os acessos abaixo para testar:
+            <ul>
+                <li>Funcionário: <code>#{loginBean.demoAdminUsuario}</code> / <code>#{loginBean.demoAdminSenha}</code></li>
+                <li>Cliente: <code>#{loginBean.demoClienteEmail}</code> / CPF <code>#{loginBean.demoClienteCpf}</code></li>
+            </ul>
+            <small>Os dados são fictícios e voltam ao estado inicial periodicamente.</small>
+        </h:panelGroup>
+
         <h:form id="loginForm">
             <p:growl id="msgs" showDetail="false" life="4000"/>
 

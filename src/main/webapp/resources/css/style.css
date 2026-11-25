@@ -5572,3 +5572,23 @@ body,
         min-width: 0 !important;
     }
 }
+/* ===== Aviso de acessos da versão de demonstração (DEMO_MODE=true) ===== */
+.demo-acessos {
+    margin: 0 0 18px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.demo-acessos ul {
+    margin: 6px 0;
+    padding-left: 18px;
+}
+
+.demo-acessos code {
+    font-weight: 600;
+    word-break: break-all;
+}

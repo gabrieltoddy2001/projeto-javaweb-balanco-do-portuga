@@ -8,6 +8,16 @@ A aplicação permite o controle de clientes, veículos, reservas e pagamentos, 
 
 O projeto também conta com upload de fotos dos veículos, controle de pagamentos parciais, aplicação de multas, histórico financeiro e layout responsivo para melhor adaptação em diferentes tamanhos de tela.
 
+## Demonstração Online
+
+A aplicação está publicada para testes em: **https://balanco-do-portuga.onrender.com** _(link definitivo após o primeiro deploy no Render)_
+
+- Os acessos de teste (funcionário e cliente) aparecem na própria tela de login.
+- Os dados são fictícios e voltam ao estado inicial sempre que o servidor reinicia.
+- No plano gratuito o servidor "dorme" após alguns minutos sem uso: o primeiro acesso pode levar cerca de 1 minuto.
+
+> Existe também a versão desktop (Java Swing) do mesmo sistema: [projeto-java-balanco-do-portuga](https://github.com/gabrieltoddy2001/projeto-java-balanco-do-portuga).
+
 ---
 
 ## Objetivo
@@ -142,6 +152,8 @@ System.getProperty("user.home")
 
 Isso evita que o sistema dependa de um caminho fixo do computador do desenvolvedor.
 
+Se a variável de ambiente `UPLOAD_DIR` estiver definida (como na versão online), as imagens são salvas nessa pasta.
+
 ### Observação importante
 
 Caso o projeto seja enviado para outro computador com imagens já cadastradas, é necessário copiar também a pasta de uploads para o mesmo caminho do novo usuário:
@@ -265,6 +277,45 @@ Exemplo de acesso:
 http://localhost:8080/BalancoDoPortugaWeb/
 ```
 
+O banco `balancodoportuga.db` é criado automaticamente na primeira execução (ele não fica no repositório).
+
+---
+
+### Executar com Docker
+
+Também é possível rodar exatamente como na versão online, sem instalar GlassFish ou Maven:
+
+```bash
+docker build -t balanco-do-portuga .
+docker run -p 8080:8080 balanco-do-portuga
+```
+
+Acesse `http://localhost:8080/`. O container usa o **Payara Micro** (servidor Jakarta EE 10 derivado do GlassFish) e já vem com dados de demonstração.
+
+---
+
+### Variáveis de Ambiente
+
+Todas são opcionais; sem elas o sistema funciona como no NetBeans.
+
+| Variável | Para que serve | Padrão |
+|----------|----------------|--------|
+| `DB_PATH` | Caminho do arquivo SQLite | `balancodoportuga.db` |
+| `UPLOAD_DIR` | Pasta das fotos dos veículos | `~/BalancoDoPortugaWeb/uploads/veiculos` |
+| `ADMIN_USER` | Usuário do funcionário | `admin` |
+| `ADMIN_PASSWORD` | Senha do funcionário | `362651` |
+| `DEMO_MODE` | `true` popula dados fictícios e mostra os acessos de teste na tela de login | `false` |
+
+---
+
+### Publicar no Render
+
+O repositório já contém o `Dockerfile` e o `render.yaml`:
+
+1. Em [render.com](https://render.com), clique em **New → Blueprint**.
+2. Selecione este repositório e confirme.
+3. Aguarde o build (alguns minutos) e acesse a URL gerada.
+
 ---
 
 ## Login de Teste
@@ -276,6 +327,8 @@ Usuário: admin
 Senha: 362651
 ```
 
+Na versão online, o usuário e a senha são os definidos no `render.yaml` e aparecem na tela de login.
+
 ### Cliente
 
 O cliente acessa utilizando:
@@ -285,11 +338,11 @@ Login: e-mail cadastrado
 Senha: CPF cadastrado
 ```
 
-Exemplo:
+Exemplo (dados fictícios da demonstração):
 
 ```text
-E-mail: gabriel@gmail.com
-CPF: 111.222.333-44
+E-mail: ana.souza@exemplo.com
+CPF: 123.456.789-09
 ```
 
 ---
@@ -321,7 +374,9 @@ BalancoDoPortugaWeb/
 │           ├── cliente-menu.xhtml
 │           └── funcionario-menu.xhtml
 ├── pom.xml
-├── balancodoportuga.db
+├── demo/veiculos/          (fotos usadas nos dados de demonstração)
+├── Dockerfile
+├── render.yaml
 ├── .gitignore
 └── README.md
 ```

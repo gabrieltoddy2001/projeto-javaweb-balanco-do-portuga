@@ -2,6 +2,8 @@ package com.balancodoportuga.bean;
 
 import com.balancodoportuga.model.Cliente;
 import com.balancodoportuga.service.ClienteService;
+import com.balancodoportuga.util.Ambiente;
+import com.balancodoportuga.util.DadosDemo;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
@@ -55,7 +57,7 @@ public class LoginBean implements Serializable {
     }
 
   private String entrarComoFuncionario() {
-    if ("admin".equalsIgnoreCase(login) && "362651".equals(senha)) {
+    if (Ambiente.adminUsuario().equalsIgnoreCase(login) && Ambiente.adminSenha().equals(senha)) {
         tipoUsuario = "admin";
         clienteLogado = null;
         logado = true;
@@ -89,7 +91,7 @@ private String entrarComoCliente() throws Exception {
 }
 
 private String entrarGeral() throws Exception {
-    if ("admin".equalsIgnoreCase(login) && "362651".equals(senha)) {
+    if (Ambiente.adminUsuario().equalsIgnoreCase(login) && Ambiente.adminSenha().equals(senha)) {
         tipoUsuario = "admin";
         clienteLogado = null;
         logado = true;
@@ -162,17 +164,25 @@ public String sair() {
         return "Entre com suas credenciais para acessar o sistema.";
     }
 
-    public String getDicaAcesso() {
-        if ("cliente".equals(acesso)) {
-            
-        }
+    /** Só exibe os acessos de teste na versão de demonstração (DEMO_MODE=true). */
+    public boolean isModoDemo() {
+        return Ambiente.modoDemo();
+    }
 
-        if ("funcionario".equals(acesso)) {
-            
-        }
-        return null;
+    public String getDemoAdminUsuario() {
+        return Ambiente.adminUsuario();
+    }
 
-        
+    public String getDemoAdminSenha() {
+        return isModoDemo() ? Ambiente.adminSenha() : null;
+    }
+
+    public String getDemoClienteEmail() {
+        return DadosDemo.CLIENTE_EMAIL;
+    }
+
+    public String getDemoClienteCpf() {
+        return DadosDemo.CLIENTE_CPF;
     }
 
     private boolean cpfConfere(String cpfCadastrado, String cpfDigitado) {

@@ -1,0 +1,16 @@
+# Blueprint do Render: cria o serviço web a partir do Dockerfile.
+# No Render: New > Blueprint > selecione este repositório.
+services:
+  - type: web
+    name: balanco-do-portuga
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /index.xhtml
+    envVars:
+      - key: DEMO_MODE
+        value: "true"
+      - key: ADMIN_USER
+        value: admin
+      - key: ADMIN_PASSWORD
+        value: portuga2025

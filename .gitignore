@@ -1,0 +1,16 @@
+# Build do Maven
+/target/
+
+# Banco local: é criado automaticamente na primeira execução
+*.db
+
+# Configurações locais de IDE
+nbactions.xml
+nb-project.properties
+.idea/
+.vscode/
+*.iml
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

@@ -8,7 +8,7 @@ import java.sql.Statement;
 
 public class DB {
 
-    private static final String URL = "jdbc:sqlite:balancodoportuga.db";
+    private static final String URL = "jdbc:sqlite:" + Ambiente.get("DB_PATH", "balancodoportuga.db");
 
     static {
         try {
@@ -20,6 +20,10 @@ public class DB {
         try (Connection conn = getConnection()) {
             criarTabelas(conn);
             atualizarEstrutura(conn);
+
+            if (Ambiente.modoDemo()) {
+                DadosDemo.popularSeVazio(conn);
+            }
         } catch (SQLException e) {
             System.err.println("Erro ao inicializar o banco: " + e.getMessage());
         }
