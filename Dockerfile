@@ -26,4 +26,4 @@ COPY --chown=payara:payara --from=build /app/target/BalancoDoPortugaWeb-1.0-SNAP
 EXPOSE 8080
 
 # Memória ajustada para caber no plano gratuito do Render (512 MB)
-ENTRYPOINT ["sh", "-c", "exec java -Xms96m -Xmx300m -XX:MaxMetaspaceSize=160m -XX:+UseSerialGC -Xss512k -jar /opt/payara/payara-micro.jar --nocluster --port ${PORT} --contextroot / --deploy /opt/payara/deployments/ROOT.war"]
+ENTRYPOINT ["sh", "-c", "exec java -Xms96m -Xmx300m -XX:MaxMetaspaceSize=160m -XX:+UseSerialGC -Xss512k -jar /opt/payara/payara-micro.jar --nocluster --nohazelcast --port ${PORT} --contextroot / --deploy /opt/payara/deployments/ROOT.war"]

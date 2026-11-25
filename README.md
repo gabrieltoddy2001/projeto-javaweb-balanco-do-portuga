@@ -10,7 +10,7 @@ O projeto também conta com upload de fotos dos veículos, controle de pagamento
 
 ## Demonstração Online
 
-A aplicação está publicada para testes em: **https://balanco-do-portuga.onrender.com** _(link definitivo após o primeiro deploy no Render)_
+A aplicação está publicada para testes em: **https://balanco-do-portuga.onrender.com**
 
 - Os acessos de teste (funcionário e cliente) aparecem na própria tela de login.
 - Os dados são fictícios e voltam ao estado inicial sempre que o servidor reinicia.
